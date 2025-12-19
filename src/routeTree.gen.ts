@@ -12,7 +12,10 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as siteRouteRouteImport } from './routes/(site)/route'
 import { Route as marketingRouteRouteImport } from './routes/(marketing)/route'
 import { Route as marketingIndexRouteImport } from './routes/(marketing)/index'
+import { Route as siteShopIndexRouteImport } from './routes/(site)/shop/index'
+import { Route as siteQuestsIndexRouteImport } from './routes/(site)/quests/index'
 import { Route as siteLearnIndexRouteImport } from './routes/(site)/learn/index'
+import { Route as siteLeaderboardIndexRouteImport } from './routes/(site)/leaderboard/index'
 import { Route as siteCoursesIndexRouteImport } from './routes/(site)/courses/index'
 
 const siteRouteRoute = siteRouteRouteImport.update({
@@ -28,9 +31,24 @@ const marketingIndexRoute = marketingIndexRouteImport.update({
   path: '/',
   getParentRoute: () => marketingRouteRoute,
 } as any)
+const siteShopIndexRoute = siteShopIndexRouteImport.update({
+  id: '/shop/',
+  path: '/shop/',
+  getParentRoute: () => siteRouteRoute,
+} as any)
+const siteQuestsIndexRoute = siteQuestsIndexRouteImport.update({
+  id: '/quests/',
+  path: '/quests/',
+  getParentRoute: () => siteRouteRoute,
+} as any)
 const siteLearnIndexRoute = siteLearnIndexRouteImport.update({
   id: '/learn/',
   path: '/learn/',
+  getParentRoute: () => siteRouteRoute,
+} as any)
+const siteLeaderboardIndexRoute = siteLeaderboardIndexRouteImport.update({
+  id: '/leaderboard/',
+  path: '/leaderboard/',
   getParentRoute: () => siteRouteRoute,
 } as any)
 const siteCoursesIndexRoute = siteCoursesIndexRouteImport.update({
@@ -42,12 +60,18 @@ const siteCoursesIndexRoute = siteCoursesIndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof marketingIndexRoute
   '/courses': typeof siteCoursesIndexRoute
+  '/leaderboard': typeof siteLeaderboardIndexRoute
   '/learn': typeof siteLearnIndexRoute
+  '/quests': typeof siteQuestsIndexRoute
+  '/shop': typeof siteShopIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof marketingIndexRoute
   '/courses': typeof siteCoursesIndexRoute
+  '/leaderboard': typeof siteLeaderboardIndexRoute
   '/learn': typeof siteLearnIndexRoute
+  '/quests': typeof siteQuestsIndexRoute
+  '/shop': typeof siteShopIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -55,20 +79,26 @@ export interface FileRoutesById {
   '/(site)': typeof siteRouteRouteWithChildren
   '/(marketing)/': typeof marketingIndexRoute
   '/(site)/courses/': typeof siteCoursesIndexRoute
+  '/(site)/leaderboard/': typeof siteLeaderboardIndexRoute
   '/(site)/learn/': typeof siteLearnIndexRoute
+  '/(site)/quests/': typeof siteQuestsIndexRoute
+  '/(site)/shop/': typeof siteShopIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/courses' | '/learn'
+  fullPaths: '/' | '/courses' | '/leaderboard' | '/learn' | '/quests' | '/shop'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/courses' | '/learn'
+  to: '/' | '/courses' | '/leaderboard' | '/learn' | '/quests' | '/shop'
   id:
     | '__root__'
     | '/(marketing)'
     | '/(site)'
     | '/(marketing)/'
     | '/(site)/courses/'
+    | '/(site)/leaderboard/'
     | '/(site)/learn/'
+    | '/(site)/quests/'
+    | '/(site)/shop/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -99,11 +129,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof marketingIndexRouteImport
       parentRoute: typeof marketingRouteRoute
     }
+    '/(site)/shop/': {
+      id: '/(site)/shop/'
+      path: '/shop'
+      fullPath: '/shop'
+      preLoaderRoute: typeof siteShopIndexRouteImport
+      parentRoute: typeof siteRouteRoute
+    }
+    '/(site)/quests/': {
+      id: '/(site)/quests/'
+      path: '/quests'
+      fullPath: '/quests'
+      preLoaderRoute: typeof siteQuestsIndexRouteImport
+      parentRoute: typeof siteRouteRoute
+    }
     '/(site)/learn/': {
       id: '/(site)/learn/'
       path: '/learn'
       fullPath: '/learn'
       preLoaderRoute: typeof siteLearnIndexRouteImport
+      parentRoute: typeof siteRouteRoute
+    }
+    '/(site)/leaderboard/': {
+      id: '/(site)/leaderboard/'
+      path: '/leaderboard'
+      fullPath: '/leaderboard'
+      preLoaderRoute: typeof siteLeaderboardIndexRouteImport
       parentRoute: typeof siteRouteRoute
     }
     '/(site)/courses/': {
@@ -130,12 +181,18 @@ const marketingRouteRouteWithChildren = marketingRouteRoute._addFileChildren(
 
 interface siteRouteRouteChildren {
   siteCoursesIndexRoute: typeof siteCoursesIndexRoute
+  siteLeaderboardIndexRoute: typeof siteLeaderboardIndexRoute
   siteLearnIndexRoute: typeof siteLearnIndexRoute
+  siteQuestsIndexRoute: typeof siteQuestsIndexRoute
+  siteShopIndexRoute: typeof siteShopIndexRoute
 }
 
 const siteRouteRouteChildren: siteRouteRouteChildren = {
   siteCoursesIndexRoute: siteCoursesIndexRoute,
+  siteLeaderboardIndexRoute: siteLeaderboardIndexRoute,
   siteLearnIndexRoute: siteLearnIndexRoute,
+  siteQuestsIndexRoute: siteQuestsIndexRoute,
+  siteShopIndexRoute: siteShopIndexRoute,
 }
 
 const siteRouteRouteWithChildren = siteRouteRoute._addFileChildren(
