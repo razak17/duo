@@ -1,7 +1,10 @@
-import { pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core'
+import { boolean, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core'
 
 export const todos = pgTable('todos', {
   id: serial().primaryKey(),
   title: text().notNull(),
-  createdAt: timestamp('created_at').defaultNow(),
+  completed: boolean().default(false).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
 })
+export type Todo = typeof todos.$inferSelect
+export type NewTodo = typeof todos.$inferInsert
