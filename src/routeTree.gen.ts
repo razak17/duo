@@ -9,50 +9,75 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as siteRouteRouteImport } from './routes/(site)/route'
+import { Route as siteIndexRouteImport } from './routes/(site)/index'
 
-const IndexRoute = IndexRouteImport.update({
+const siteRouteRoute = siteRouteRouteImport.update({
+  id: '/(site)',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const siteIndexRoute = siteIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => siteRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/': typeof siteIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
+  '/': typeof siteIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
+  '/(site)': typeof siteRouteRouteWithChildren
+  '/(site)/': typeof siteIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths: '/'
   fileRoutesByTo: FileRoutesByTo
   to: '/'
-  id: '__root__' | '/'
+  id: '__root__' | '/(site)' | '/(site)/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  siteRouteRoute: typeof siteRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/(site)': {
+      id: '/(site)'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof siteRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(site)/': {
+      id: '/(site)/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof siteIndexRouteImport
+      parentRoute: typeof siteRouteRoute
     }
   }
 }
 
+interface siteRouteRouteChildren {
+  siteIndexRoute: typeof siteIndexRoute
+}
+
+const siteRouteRouteChildren: siteRouteRouteChildren = {
+  siteIndexRoute: siteIndexRoute,
+}
+
+const siteRouteRouteWithChildren = siteRouteRoute._addFileChildren(
+  siteRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  siteRouteRoute: siteRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
