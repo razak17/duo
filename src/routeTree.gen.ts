@@ -10,38 +10,69 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as siteRouteRouteImport } from './routes/(site)/route'
-import { Route as siteIndexRouteImport } from './routes/(site)/index'
+import { Route as marketingRouteRouteImport } from './routes/(marketing)/route'
+import { Route as marketingIndexRouteImport } from './routes/(marketing)/index'
+import { Route as siteLearnIndexRouteImport } from './routes/(site)/learn/index'
+import { Route as siteCoursesIndexRouteImport } from './routes/(site)/courses/index'
 
 const siteRouteRoute = siteRouteRouteImport.update({
   id: '/(site)',
   getParentRoute: () => rootRouteImport,
 } as any)
-const siteIndexRoute = siteIndexRouteImport.update({
+const marketingRouteRoute = marketingRouteRouteImport.update({
+  id: '/(marketing)',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const marketingIndexRoute = marketingIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => marketingRouteRoute,
+} as any)
+const siteLearnIndexRoute = siteLearnIndexRouteImport.update({
+  id: '/learn/',
+  path: '/learn/',
+  getParentRoute: () => siteRouteRoute,
+} as any)
+const siteCoursesIndexRoute = siteCoursesIndexRouteImport.update({
+  id: '/courses/',
+  path: '/courses/',
   getParentRoute: () => siteRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof siteIndexRoute
+  '/': typeof marketingIndexRoute
+  '/courses': typeof siteCoursesIndexRoute
+  '/learn': typeof siteLearnIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof siteIndexRoute
+  '/': typeof marketingIndexRoute
+  '/courses': typeof siteCoursesIndexRoute
+  '/learn': typeof siteLearnIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/(marketing)': typeof marketingRouteRouteWithChildren
   '/(site)': typeof siteRouteRouteWithChildren
-  '/(site)/': typeof siteIndexRoute
+  '/(marketing)/': typeof marketingIndexRoute
+  '/(site)/courses/': typeof siteCoursesIndexRoute
+  '/(site)/learn/': typeof siteLearnIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/courses' | '/learn'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/(site)' | '/(site)/'
+  to: '/' | '/courses' | '/learn'
+  id:
+    | '__root__'
+    | '/(marketing)'
+    | '/(site)'
+    | '/(marketing)/'
+    | '/(site)/courses/'
+    | '/(site)/learn/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  marketingRouteRoute: typeof marketingRouteRouteWithChildren
   siteRouteRoute: typeof siteRouteRouteWithChildren
 }
 
@@ -54,22 +85,57 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof siteRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(site)/': {
-      id: '/(site)/'
+    '/(marketing)': {
+      id: '/(marketing)'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof marketingRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(marketing)/': {
+      id: '/(marketing)/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof siteIndexRouteImport
+      preLoaderRoute: typeof marketingIndexRouteImport
+      parentRoute: typeof marketingRouteRoute
+    }
+    '/(site)/learn/': {
+      id: '/(site)/learn/'
+      path: '/learn'
+      fullPath: '/learn'
+      preLoaderRoute: typeof siteLearnIndexRouteImport
+      parentRoute: typeof siteRouteRoute
+    }
+    '/(site)/courses/': {
+      id: '/(site)/courses/'
+      path: '/courses'
+      fullPath: '/courses'
+      preLoaderRoute: typeof siteCoursesIndexRouteImport
       parentRoute: typeof siteRouteRoute
     }
   }
 }
 
+interface marketingRouteRouteChildren {
+  marketingIndexRoute: typeof marketingIndexRoute
+}
+
+const marketingRouteRouteChildren: marketingRouteRouteChildren = {
+  marketingIndexRoute: marketingIndexRoute,
+}
+
+const marketingRouteRouteWithChildren = marketingRouteRoute._addFileChildren(
+  marketingRouteRouteChildren,
+)
+
 interface siteRouteRouteChildren {
-  siteIndexRoute: typeof siteIndexRoute
+  siteCoursesIndexRoute: typeof siteCoursesIndexRoute
+  siteLearnIndexRoute: typeof siteLearnIndexRoute
 }
 
 const siteRouteRouteChildren: siteRouteRouteChildren = {
-  siteIndexRoute: siteIndexRoute,
+  siteCoursesIndexRoute: siteCoursesIndexRoute,
+  siteLearnIndexRoute: siteLearnIndexRoute,
 }
 
 const siteRouteRouteWithChildren = siteRouteRoute._addFileChildren(
@@ -77,6 +143,7 @@ const siteRouteRouteWithChildren = siteRouteRoute._addFileChildren(
 )
 
 const rootRouteChildren: RootRouteChildren = {
+  marketingRouteRoute: marketingRouteRouteWithChildren,
   siteRouteRoute: siteRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport

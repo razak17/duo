@@ -5,9 +5,5 @@ export const Route = createFileRoute('/(site)')({
 })
 
 function RouteComponent({ children }: { children?: React.ReactNode }) {
-  return (
-    <div className="">
-      {children ? children : <Outlet />}
-    </div>
-  )
+  return <div className="">{children ? children : <Outlet />}</div>
 }

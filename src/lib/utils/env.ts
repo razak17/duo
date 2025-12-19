@@ -18,6 +18,9 @@ export const env = createEnv({
     VITE_APP_TITLE: z.string().min(1).optional(),
     VITE_APP_ENV: z.enum(['development', 'test', 'production']),
     VITE_SERVER_URL: z.url(),
+    VITE_CLERK_PUBLISHABLE_KEY: z.string().min(1),
+    VITE_CLERK_SIGN_IN_FORCE_REDIRECT_URL: z.string().min(1),
+    VITE_CLERK_SIGN_UP_FORCE_REDIRECT_URL: z.string().min(1),
   },
 
   /**
@@ -31,6 +34,11 @@ export const env = createEnv({
     VITE_APP_TITLE: import.meta.env.VITE_APP_TITLE,
     VITE_APP_ENV: import.meta.env.VITE_APP_ENV,
     VITE_SERVER_URL: import.meta.env.VITE_SERVER_URL,
+    VITE_CLERK_PUBLISHABLE_KEY: import.meta.env.VITE_CLERK_PUBLISHABLE_KEY,
+    VITE_CLERK_SIGN_IN_FORCE_REDIRECT_URL: import.meta.env
+      .VITE_CLERK_SIGN_IN_FORCE_REDIRECT_URL,
+    VITE_CLERK_SIGN_UP_FORCE_REDIRECT_URL: import.meta.env
+      .VITE_CLERK_SIGN_UP_FORCE_REDIRECT_URL,
   },
 
   /**
