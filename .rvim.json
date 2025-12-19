@@ -1,0 +1,18 @@
+{
+  "lsp": {
+    "override": ["biome", "jsonls", "vtsls", "copilot"],
+    "lang": {
+      "typescript": {
+        "tsgo": true,
+        "vtsls": true
+      },
+      "web": {
+        "eslint": false,
+        "biome": true
+      }
+    }
+  },
+  "explorer": {
+    "variant": "neo-tree"
+  }
+}
