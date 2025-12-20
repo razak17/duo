@@ -14,3 +14,6 @@ export const coursesRelations = relations(courses, ({ many }) => ({
   userProgress: many(userProgress),
   units: many(units),
 }))
+
+export type Course = typeof courses.$inferSelect
+export type NewCourse = typeof courses.$inferInsert
