@@ -1,4 +1,8 @@
-import { ClerkLoaded, ClerkLoading, UserButton } from '@clerk/clerk-react'
+import {
+  ClerkLoaded,
+  ClerkLoading,
+  UserButton,
+} from '@clerk/tanstack-react-start'
 import { Link } from '@tanstack/react-router'
 import { Loader } from 'lucide-react'
 
@@ -41,7 +45,7 @@ export function Sidebar({ className }: Props) {
           <Loader className="h-5 w-5 animate-spin text-muted-foreground" />
         </ClerkLoading>
         <ClerkLoaded>
-          <UserButton afterSignOutUrl="/" />
+          <UserButton />
         </ClerkLoaded>
       </div>
     </div>

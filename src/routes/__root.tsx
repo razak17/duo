@@ -1,4 +1,4 @@
-import { ClerkProvider } from '@clerk/clerk-react'
+import { ClerkProvider } from '@clerk/tanstack-react-start'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import type { QueryClient } from '@tanstack/react-query'
 import {
@@ -56,15 +56,15 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        <ClerkProvider
-          publishableKey={env.VITE_CLERK_PUBLISHABLE_KEY}
-          afterSignOutUrl={env.VITE_SERVER_URL}
-        >
+    <ClerkProvider
+      publishableKey={env.VITE_CLERK_PUBLISHABLE_KEY}
+      afterSignOutUrl={env.VITE_SERVER_URL}
+    >
+      <html lang="en">
+        <head>
+          <HeadContent />
+        </head>
+        <body>
           {children}
           <TanStackDevtools
             config={{
@@ -79,8 +79,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             ]}
           />
           <Scripts />
-        </ClerkProvider>
-      </body>
-    </html>
+        </body>
+      </html>
+    </ClerkProvider>
   )
 }

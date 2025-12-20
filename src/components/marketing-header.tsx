@@ -5,7 +5,7 @@ import {
   SignedOut,
   SignInButton,
   UserButton,
-} from '@clerk/clerk-react'
+} from '@clerk/tanstack-react-start'
 import { Loader } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'

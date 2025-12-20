@@ -5,7 +5,7 @@ import {
   SignedOut,
   SignInButton,
   SignUpButton,
-} from '@clerk/clerk-react'
+} from '@clerk/tanstack-react-start'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Loader } from 'lucide-react'
 
