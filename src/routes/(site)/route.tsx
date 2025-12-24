@@ -1,9 +1,12 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 
 import { MobileNav } from '@/components/mobile-nav'
 import { Sidebar } from '@/components/sidebar'
 
 export const Route = createFileRoute('/(site)')({
+  beforeLoad: ({ context: { userId } }) => {
+    if (!userId) throw redirect({ to: '/' })
+  },
   component: RouteComponent,
 })
 

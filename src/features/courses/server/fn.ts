@@ -2,10 +2,16 @@ import { createServerFn } from '@tanstack/react-start'
 
 import { authedFn } from '@/lib/middleware/auth'
 
-import { getCourses } from './data-access'
+import { getCourses, getUserProgress } from './data-access'
 
 export const getCoursesFn = createServerFn({ method: 'GET' })
   .middleware([authedFn])
   .handler(async () => {
     return await getCourses()
+  })
+
+export const getUserProgressFn = createServerFn({ method: 'GET' })
+  .middleware([authedFn])
+  .handler(async ({ context: { userId } }) => {
+    return await getUserProgress({ userId })
   })

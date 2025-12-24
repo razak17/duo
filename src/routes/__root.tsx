@@ -10,6 +10,7 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 
 import { env } from '@/lib/utils/env'
 
+import { userQueryOptions } from '@/features/shared/user/server/queries'
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 import appCss from '../styles/app.css?url'
 
@@ -18,6 +19,10 @@ interface MyRouterContext {
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
+  beforeLoad: async ({ context }) => {
+    const userId = await context.queryClient.fetchQuery(userQueryOptions())
+    return { userId }
+  },
   head: () => ({
     meta: [
       {
