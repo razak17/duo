@@ -13,14 +13,6 @@ import { getUserSubscriptionQueryOptions } from '@/features/learn/server/queries
 export const Route = createFileRoute('/(site)/learn/')({
   component: RouteComponent,
   pendingComponent: PendingComponent,
-  beforeLoad: async ({ context: { queryClient, userId } }) => {
-    const userProgress = await queryClient.fetchQuery(
-      getUserProgressQueryOptions(userId),
-    )
-    if (!userProgress || !userProgress.activeCourse) {
-      throw redirect({ to: '/courses' })
-    }
-  },
   loader: async ({ context: { queryClient, userId } }) => {
     const [userSubscription, userProgress] = await Promise.all([
       queryClient.ensureQueryData(getUserSubscriptionQueryOptions(userId)),
@@ -41,6 +33,10 @@ function RouteComponent() {
   const { data: userProgress } = useSuspenseQuery(
     getUserProgressQueryOptions(userId),
   )
+
+  if (!userProgress || !userProgress.activeCourse) {
+    redirect({ to: '/courses' })
+  }
 
   const isPro = !!userSubscription?.isActive
 
