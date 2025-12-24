@@ -26,7 +26,7 @@ export function Sidebar({ className }: SidebarProps) {
         <div className="flex items-center gap-x-3 pt-8 pb-7 pl-4">
           <img src="/mascot.svg" height={40} width={40} alt="Mascot" />
           <h1 className="font-extrabold text-2xl text-green-600 tracking-wide">
-            Lingo
+            Lingozeit
           </h1>
         </div>
       </Link>

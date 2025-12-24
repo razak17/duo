@@ -17,6 +17,8 @@ import { Route as siteQuestsIndexRouteImport } from './routes/(site)/quests/inde
 import { Route as siteLearnIndexRouteImport } from './routes/(site)/learn/index'
 import { Route as siteLeaderboardIndexRouteImport } from './routes/(site)/leaderboard/index'
 import { Route as siteCoursesIndexRouteImport } from './routes/(site)/courses/index'
+import { Route as marketingTermsIndexRouteImport } from './routes/(marketing)/terms/index'
+import { Route as marketingPrivacyIndexRouteImport } from './routes/(marketing)/privacy/index'
 
 const siteRouteRoute = siteRouteRouteImport.update({
   id: '/(site)',
@@ -56,9 +58,21 @@ const siteCoursesIndexRoute = siteCoursesIndexRouteImport.update({
   path: '/courses/',
   getParentRoute: () => siteRouteRoute,
 } as any)
+const marketingTermsIndexRoute = marketingTermsIndexRouteImport.update({
+  id: '/terms/',
+  path: '/terms/',
+  getParentRoute: () => marketingRouteRoute,
+} as any)
+const marketingPrivacyIndexRoute = marketingPrivacyIndexRouteImport.update({
+  id: '/privacy/',
+  path: '/privacy/',
+  getParentRoute: () => marketingRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof marketingIndexRoute
+  '/privacy': typeof marketingPrivacyIndexRoute
+  '/terms': typeof marketingTermsIndexRoute
   '/courses': typeof siteCoursesIndexRoute
   '/leaderboard': typeof siteLeaderboardIndexRoute
   '/learn': typeof siteLearnIndexRoute
@@ -67,6 +81,8 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof marketingIndexRoute
+  '/privacy': typeof marketingPrivacyIndexRoute
+  '/terms': typeof marketingTermsIndexRoute
   '/courses': typeof siteCoursesIndexRoute
   '/leaderboard': typeof siteLeaderboardIndexRoute
   '/learn': typeof siteLearnIndexRoute
@@ -78,6 +94,8 @@ export interface FileRoutesById {
   '/(marketing)': typeof marketingRouteRouteWithChildren
   '/(site)': typeof siteRouteRouteWithChildren
   '/(marketing)/': typeof marketingIndexRoute
+  '/(marketing)/privacy/': typeof marketingPrivacyIndexRoute
+  '/(marketing)/terms/': typeof marketingTermsIndexRoute
   '/(site)/courses/': typeof siteCoursesIndexRoute
   '/(site)/leaderboard/': typeof siteLeaderboardIndexRoute
   '/(site)/learn/': typeof siteLearnIndexRoute
@@ -86,14 +104,32 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/courses' | '/leaderboard' | '/learn' | '/quests' | '/shop'
+  fullPaths:
+    | '/'
+    | '/privacy'
+    | '/terms'
+    | '/courses'
+    | '/leaderboard'
+    | '/learn'
+    | '/quests'
+    | '/shop'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/courses' | '/leaderboard' | '/learn' | '/quests' | '/shop'
+  to:
+    | '/'
+    | '/privacy'
+    | '/terms'
+    | '/courses'
+    | '/leaderboard'
+    | '/learn'
+    | '/quests'
+    | '/shop'
   id:
     | '__root__'
     | '/(marketing)'
     | '/(site)'
     | '/(marketing)/'
+    | '/(marketing)/privacy/'
+    | '/(marketing)/terms/'
     | '/(site)/courses/'
     | '/(site)/leaderboard/'
     | '/(site)/learn/'
@@ -164,15 +200,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof siteCoursesIndexRouteImport
       parentRoute: typeof siteRouteRoute
     }
+    '/(marketing)/terms/': {
+      id: '/(marketing)/terms/'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof marketingTermsIndexRouteImport
+      parentRoute: typeof marketingRouteRoute
+    }
+    '/(marketing)/privacy/': {
+      id: '/(marketing)/privacy/'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof marketingPrivacyIndexRouteImport
+      parentRoute: typeof marketingRouteRoute
+    }
   }
 }
 
 interface marketingRouteRouteChildren {
   marketingIndexRoute: typeof marketingIndexRoute
+  marketingPrivacyIndexRoute: typeof marketingPrivacyIndexRoute
+  marketingTermsIndexRoute: typeof marketingTermsIndexRoute
 }
 
 const marketingRouteRouteChildren: marketingRouteRouteChildren = {
   marketingIndexRoute: marketingIndexRoute,
+  marketingPrivacyIndexRoute: marketingPrivacyIndexRoute,
+  marketingTermsIndexRoute: marketingTermsIndexRoute,
 }
 
 const marketingRouteRouteWithChildren = marketingRouteRoute._addFileChildren(
