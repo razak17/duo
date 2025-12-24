@@ -1,17 +1,17 @@
 import { ClerkProvider } from '@clerk/tanstack-react-start'
-import { TanStackDevtools } from '@tanstack/react-devtools'
 import type { QueryClient } from '@tanstack/react-query'
 import {
   createRootRouteWithContext,
   HeadContent,
+  Outlet,
   Scripts,
 } from '@tanstack/react-router'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 
+import { useServerErrors } from '@/lib/hooks/use-server-errors'
 import { env } from '@/lib/utils/env'
 
+import { DevTools } from '@/components/devtools'
 import { userQueryOptions } from '@/features/shared/server/queries'
-import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 import appCss from '../styles/app.css?url'
 
 interface MyRouterContext {
@@ -55,37 +55,35 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       },
     ],
   }),
-
-  shellComponent: RootDocument,
+  component: RouteComponent,
 })
 
-function RootDocument({ children }: { children: React.ReactNode }) {
+function RouteComponent() {
+  useServerErrors()
+
   return (
     <ClerkProvider
       publishableKey={env.VITE_CLERK_PUBLISHABLE_KEY}
       afterSignOutUrl={env.VITE_SERVER_URL}
     >
-      <html lang="en">
-        <head>
-          <HeadContent />
-        </head>
-        <body>
-          {children}
-          <TanStackDevtools
-            config={{
-              position: 'bottom-right',
-            }}
-            plugins={[
-              {
-                name: 'Tanstack Router',
-                render: <TanStackRouterDevtoolsPanel />,
-              },
-              TanStackQueryDevtools,
-            ]}
-          />
-          <Scripts />
-        </body>
-      </html>
+      <RootDocument>
+        <Outlet />
+      </RootDocument>
     </ClerkProvider>
+  )
+}
+
+function RootDocument({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <head>
+        <HeadContent />
+      </head>
+      <body>
+        {children}
+        <DevTools />
+        <Scripts />
+      </body>
+    </html>
   )
 }
