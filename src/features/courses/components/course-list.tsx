@@ -30,13 +30,15 @@ export const CourseList = ({ courses, activeCourseId }: CourseListProps) => {
     mutationFn: (data: Parameters<typeof upsertUserProgressFn>[0]['data']) =>
       upsertUserProgressFn({ data }),
     onSuccess: async () => {
-      queryClient.invalidateQueries(getCoursesQueryOptions())
-      queryClient.invalidateQueries(
-        getUserProgressQueryOptions(user?.id || null),
-      )
-      queryClient.invalidateQueries(
-        getUserSubscriptionQueryOptions(user?.id || null),
-      )
+      await Promise.all([
+        queryClient.invalidateQueries(getCoursesQueryOptions()),
+        queryClient.invalidateQueries(
+          getUserProgressQueryOptions(user?.id || null),
+        ),
+        queryClient.invalidateQueries(
+          getUserSubscriptionQueryOptions(user?.id || null),
+        ),
+      ])
       navigate({ to: '/learn' })
     },
     onError: () => {

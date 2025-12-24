@@ -18,6 +18,9 @@ export const Route = createFileRoute('/(site)/learn/')({
       queryClient.ensureQueryData(getUserSubscriptionQueryOptions(userId)),
       queryClient.ensureQueryData(getUserProgressQueryOptions(userId)),
     ])
+    if (!userProgress || !userProgress.activeCourse) {
+      throw redirect({ to: '/courses' })
+    }
     return {
       userSubscription,
       userProgress,
@@ -34,10 +37,6 @@ function RouteComponent() {
     getUserProgressQueryOptions(userId),
   )
 
-  if (!userProgress || !userProgress.activeCourse) {
-    redirect({ to: '/courses' })
-  }
-
   const isPro = !!userSubscription?.isActive
 
   return (
@@ -45,8 +44,10 @@ function RouteComponent() {
       <StickyWrapper>
         {userProgress?.activeCourse && (
           <UserProgress
-            // activeCourse={{ id: 1, title: 'German', imageSrc: '/de.svg' }}
-            activeCourse={userProgress?.activeCourse}
+            activeCourse={userProgress.activeCourse}
+            hearts={userProgress.hearts}
+            points={userProgress.points}
+            hasActiveSubscription={isPro}
           />
         )}
         {!isPro && <Promo />}
