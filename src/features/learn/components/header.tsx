@@ -4,7 +4,7 @@ import { ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 type HeaderProps = {
-  title: string
+  title?: string
 }
 
 export function Header({ title }: HeaderProps) {
@@ -15,7 +15,7 @@ export function Header({ title }: HeaderProps) {
           <ArrowLeft className="h-5 w-5 stroke-2 text-neutral-400" />
         </Button>
       </Link>
-      <h1 className="font-bold text-lg">{title}</h1>
+      <h1 className="font-bold text-lg">{title || 'Title'}</h1>
       <div />
     </div>
   )

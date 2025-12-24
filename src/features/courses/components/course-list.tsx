@@ -1,12 +1,20 @@
 'use client'
 
+import { useUser } from '@clerk/tanstack-react-start'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
-import { useTransition } from 'react'
+import { toast } from 'sonner'
 
 import type { Course } from '@/lib/db/schema/courses'
 import type { ActiveCourseId } from '@/lib/db/schema/users'
 
 import { CourseCard } from './course-card'
+import { getUserSubscriptionQueryOptions } from '@/features/learn/server/queries'
+import { upsertUserProgressFn } from '../server/fn'
+import {
+  getCoursesQueryOptions,
+  getUserProgressQueryOptions,
+} from '../server/queries'
 
 type CourseListProps = {
   courses: Course[]
@@ -14,19 +22,42 @@ type CourseListProps = {
 }
 
 export const CourseList = ({ courses, activeCourseId }: CourseListProps) => {
+  const queryClient = useQueryClient()
   const navigate = useNavigate()
-  const [pending, startTransition] = useTransition()
+  const { isLoaded, user } = useUser()
 
-  const onClick = (id: number) => {
-    if (pending) return
+  const { mutate, isPending } = useMutation({
+    mutationFn: (data: Parameters<typeof upsertUserProgressFn>[0]['data']) =>
+      upsertUserProgressFn({ data }),
+    onSuccess: async () => {
+      queryClient.invalidateQueries(getCoursesQueryOptions())
+      queryClient.invalidateQueries(
+        getUserProgressQueryOptions(user?.id || null),
+      )
+      queryClient.invalidateQueries(
+        getUserSubscriptionQueryOptions(user?.id || null),
+      )
+      navigate({ to: '/learn' })
+    },
+    onError: () => {
+      toast.error('Failed to enroll course')
+    },
+  })
 
-    if (id === activeCourseId) {
-      return navigate({
-        to: '/learn',
-      })
+  const onClick = (courseId: number) => {
+    if (isPending) return
+
+    if (courseId === activeCourseId) {
+      return navigate({ to: '/learn' })
     }
 
-    startTransition(() => {})
+    mutate({
+      courseId,
+      user: {
+        firstName: user?.firstName,
+        imageUrl: user?.imageUrl,
+      },
+    })
   }
 
   return (
@@ -38,7 +69,7 @@ export const CourseList = ({ courses, activeCourseId }: CourseListProps) => {
           title={course.title}
           imageUrl={course.imageSrc}
           onClick={onClick}
-          disabled={pending}
+          disabled={isPending || !isLoaded}
           active={course.id === activeCourseId}
         />
       ))}
