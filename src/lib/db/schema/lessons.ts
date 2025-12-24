@@ -20,3 +20,6 @@ export const lessonsRelations = relations(lessons, ({ one, many }) => ({
   }),
   challenges: many(challenges),
 }))
+
+export type Lesson = typeof lessons.$inferSelect
+export type NewLesson = typeof lessons.$inferInsert

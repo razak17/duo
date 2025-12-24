@@ -10,7 +10,7 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 
 import { env } from '@/lib/utils/env'
 
-import { userQueryOptions } from '@/features/shared/user/server/queries'
+import { userQueryOptions } from '@/features/shared/server/queries'
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 import appCss from '../styles/app.css?url'
 

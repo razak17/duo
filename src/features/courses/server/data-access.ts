@@ -2,7 +2,6 @@ import { eq } from 'drizzle-orm'
 
 import { db } from '@/lib/db'
 import { courses } from '@/lib/db/schema/courses'
-import { userProgress } from '@/lib/db/schema/users'
 
 export async function getCourses() {
   const data = await db.query.courses.findMany()
@@ -21,17 +20,6 @@ export async function getCourseById({ courseId }: { courseId: number }) {
           },
         },
       },
-    },
-  })
-
-  return data || null
-}
-
-export async function getUserProgress({ userId }: { userId: string }) {
-  const data = await db.query.userProgress.findFirst({
-    where: eq(userProgress.userId, userId),
-    with: {
-      activeCourse: true,
     },
   })
 

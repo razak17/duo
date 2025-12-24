@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as siteRouteRouteImport } from './routes/(site)/route'
 import { Route as marketingRouteRouteImport } from './routes/(marketing)/route'
+import { Route as LessonIndexRouteImport } from './routes/lesson/index'
 import { Route as marketingIndexRouteImport } from './routes/(marketing)/index'
 import { Route as siteShopIndexRouteImport } from './routes/(site)/shop/index'
 import { Route as siteQuestsIndexRouteImport } from './routes/(site)/quests/index'
@@ -26,6 +27,11 @@ const siteRouteRoute = siteRouteRouteImport.update({
 } as any)
 const marketingRouteRoute = marketingRouteRouteImport.update({
   id: '/(marketing)',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LessonIndexRoute = LessonIndexRouteImport.update({
+  id: '/lesson/',
+  path: '/lesson/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const marketingIndexRoute = marketingIndexRouteImport.update({
@@ -71,6 +77,7 @@ const marketingPrivacyIndexRoute = marketingPrivacyIndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof marketingIndexRoute
+  '/lesson': typeof LessonIndexRoute
   '/privacy': typeof marketingPrivacyIndexRoute
   '/terms': typeof marketingTermsIndexRoute
   '/courses': typeof siteCoursesIndexRoute
@@ -81,6 +88,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof marketingIndexRoute
+  '/lesson': typeof LessonIndexRoute
   '/privacy': typeof marketingPrivacyIndexRoute
   '/terms': typeof marketingTermsIndexRoute
   '/courses': typeof siteCoursesIndexRoute
@@ -94,6 +102,7 @@ export interface FileRoutesById {
   '/(marketing)': typeof marketingRouteRouteWithChildren
   '/(site)': typeof siteRouteRouteWithChildren
   '/(marketing)/': typeof marketingIndexRoute
+  '/lesson/': typeof LessonIndexRoute
   '/(marketing)/privacy/': typeof marketingPrivacyIndexRoute
   '/(marketing)/terms/': typeof marketingTermsIndexRoute
   '/(site)/courses/': typeof siteCoursesIndexRoute
@@ -106,6 +115,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/lesson'
     | '/privacy'
     | '/terms'
     | '/courses'
@@ -116,6 +126,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/lesson'
     | '/privacy'
     | '/terms'
     | '/courses'
@@ -128,6 +139,7 @@ export interface FileRouteTypes {
     | '/(marketing)'
     | '/(site)'
     | '/(marketing)/'
+    | '/lesson/'
     | '/(marketing)/privacy/'
     | '/(marketing)/terms/'
     | '/(site)/courses/'
@@ -140,6 +152,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   marketingRouteRoute: typeof marketingRouteRouteWithChildren
   siteRouteRoute: typeof siteRouteRouteWithChildren
+  LessonIndexRoute: typeof LessonIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -156,6 +169,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: ''
       preLoaderRoute: typeof marketingRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lesson/': {
+      id: '/lesson/'
+      path: '/lesson'
+      fullPath: '/lesson'
+      preLoaderRoute: typeof LessonIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(marketing)/': {
@@ -256,6 +276,7 @@ const siteRouteRouteWithChildren = siteRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   marketingRouteRoute: marketingRouteRouteWithChildren,
   siteRouteRoute: siteRouteRouteWithChildren,
+  LessonIndexRoute: LessonIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

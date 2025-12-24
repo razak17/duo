@@ -3,7 +3,7 @@ import { z } from 'zod'
 
 import { authedFn } from '@/lib/middleware/auth'
 
-import { getCourseById, getCourses, getUserProgress } from './data-access'
+import { getCourseById, getCourses } from './data-access'
 import { upsertUserProgress } from './mutations'
 
 export const getCoursesFn = createServerFn({ method: 'GET' })
@@ -40,10 +40,4 @@ export const upsertUserProgressFn = createServerFn({ method: 'GET' })
       userId,
       user,
     })
-  })
-
-export const getUserProgressFn = createServerFn({ method: 'GET' })
-  .middleware([authedFn])
-  .handler(async ({ context: { userId } }) => {
-    return await getUserProgress({ userId })
   })

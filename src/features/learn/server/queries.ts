@@ -1,11 +1,29 @@
 import { queryOptions } from '@tanstack/react-query'
 
-import { getUserSubscriptionFn } from './fn'
-import { GET_USER_SUBSCRIPTION_KEYS } from '../constants'
+import { getLessonFn, getLessonPercentageFn, getUnitsFn } from './fn'
+import {
+  GET_LESSON_PERCENTAGE_KEYS,
+  GET_LESSONS_KEYS,
+  GET_UNITS_KEYS,
+} from '../constants'
 
-export function getUserSubscriptionQueryOptions(userId: string | null) {
+export function getUnitsQueryOptions() {
   return queryOptions({
-    queryKey: GET_USER_SUBSCRIPTION_KEYS.byId(userId || 'user-id'),
-    queryFn: getUserSubscriptionFn,
+    queryKey: GET_UNITS_KEYS.all,
+    queryFn: () => getUnitsFn(),
+  })
+}
+
+export function getLessonQueryOptions(lessonId: number) {
+  return queryOptions({
+    queryKey: GET_LESSONS_KEYS.byId(lessonId),
+    queryFn: () => getLessonFn({ data: { lessonId } }),
+  })
+}
+
+export function getLessonPercentageQueryOptions(userId: string | null) {
+  return queryOptions({
+    queryKey: GET_LESSON_PERCENTAGE_KEYS.byUserId(userId || 'user-id'),
+    queryFn: () => getLessonPercentageFn(),
   })
 }

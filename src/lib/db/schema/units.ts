@@ -21,3 +21,6 @@ export const unitsRelations = relations(units, ({ many, one }) => ({
   }),
   lessons: many(lessons),
 }))
+
+export type Unit = typeof units.$inferSelect
+export type NewUnit = typeof units.$inferInsert

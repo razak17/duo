@@ -3,10 +3,8 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Loader } from 'lucide-react'
 
 import { CourseList } from '@/features/courses/components/course-list'
-import {
-  getCoursesQueryOptions,
-  getUserProgressQueryOptions,
-} from '@/features/courses/server/queries'
+import { getCoursesQueryOptions } from '@/features/courses/server/queries'
+import { getUserProgressQueryOptions } from '@/features/shared/server/queries'
 
 export const Route = createFileRoute('/(site)/courses/')({
   component: RouteComponent,

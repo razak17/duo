@@ -1,5 +1,3 @@
-'use client'
-
 import { useUser } from '@clerk/tanstack-react-start'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
@@ -9,12 +7,12 @@ import type { Course } from '@/lib/db/schema/courses'
 import type { ActiveCourseId } from '@/lib/db/schema/users'
 
 import { CourseCard } from './course-card'
-import { getUserSubscriptionQueryOptions } from '@/features/learn/server/queries'
-import { upsertUserProgressFn } from '../server/fn'
 import {
-  getCoursesQueryOptions,
   getUserProgressQueryOptions,
-} from '../server/queries'
+  getUserSubscriptionQueryOptions,
+} from '@/features/shared/server/queries'
+import { upsertUserProgressFn } from '../server/fn'
+import { getCoursesQueryOptions } from '../server/queries'
 
 type CourseListProps = {
   courses: Course[]
