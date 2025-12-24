@@ -4,13 +4,13 @@ import { Link, useRouterState } from '@tanstack/react-router'
 
 import { Button } from '@/components/ui/button'
 
-type Props = {
+type SidebarItemProps = {
   label: string
   iconSrc: string
   href: string
 }
 
-export function SidebarItem({ label, iconSrc, href }: Props) {
+export function SidebarItem({ label, iconSrc, href }: SidebarItemProps) {
   const routerState = useRouterState()
   const pathname = routerState.location.pathname
   const active = pathname === href

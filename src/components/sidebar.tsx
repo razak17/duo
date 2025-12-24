@@ -10,11 +10,11 @@ import { cn } from '@/lib/utils'
 
 import { SidebarItem } from './sidebar-item'
 
-type Props = {
+type SidebarProps = {
   className?: string
 }
 
-export function Sidebar({ className }: Props) {
+export function Sidebar({ className }: SidebarProps) {
   return (
     <div
       className={cn(

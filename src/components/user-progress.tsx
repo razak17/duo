@@ -5,19 +5,19 @@ import type { Course } from '@/lib/db/schema/courses'
 
 import { Button } from '@/components/ui/button'
 
-type Props = {
+type UserProgressProps = {
   activeCourse: Course
   hearts?: number
   points?: number
   hasActiveSubscription?: boolean
 }
 
-export const UserProgress = ({
+export function UserProgress({
   activeCourse,
   points = 0,
   hearts = 0,
   hasActiveSubscription = false,
-}: Props) => {
+}: UserProgressProps) {
   return (
     <div className="flex w-full items-center justify-between gap-x-2">
       <Link to="/courses">
