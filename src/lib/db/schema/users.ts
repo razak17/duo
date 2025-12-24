@@ -29,3 +29,6 @@ export const userSubscription = pgTable('user_subscription', {
   stripePriceId: text('stripe_price_id').notNull(),
   stripeCurrentPeriodEnd: timestamp('stripe_current_period_end').notNull(),
 })
+
+export type UserProgress = typeof userProgress.$inferSelect
+export type ActiveCourseId = typeof userProgress.$inferSelect.activeCourseId
