@@ -13,6 +13,8 @@ export const getRouter = () => {
     routeTree,
     context: { ...rqContext },
     defaultPreload: 'intent',
+    defaultNotFoundComponent: () => <div>404 - Page Not Found</div>,
+    defaultErrorComponent: (err) => <p>{err.error.stack}</p>,
   })
 
   setupRouterSsrQueryIntegration({ router, queryClient: rqContext.queryClient })
