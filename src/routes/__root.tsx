@@ -11,6 +11,7 @@ import { useServerErrors } from '@/lib/hooks/use-server-errors'
 import { env } from '@/lib/utils/env'
 
 import { DevTools } from '@/components/devtools'
+import { ExitModal } from '@/components/exit-modal'
 import { userQueryOptions } from '@/features/shared/server/queries'
 import appCss from '../styles/app.css?url'
 
@@ -81,6 +82,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
+        <ExitModal />
         <DevTools />
         <Scripts />
       </body>

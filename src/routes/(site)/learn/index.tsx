@@ -9,7 +9,7 @@ import { FeedWrapper } from '@/components/feed-wrapper'
 import { Promo } from '@/components/promo'
 import { StickyWrapper } from '@/components/sticky-wrapper'
 import { UserProgress } from '@/components/user-progress'
-import { Header } from '@/features/learn/components/header'
+import { LearnHeader } from '@/features/learn/components/learn-header'
 import { LessonUnit } from '@/features/learn/components/lesson-unit'
 import {
   getLessonPercentageQueryOptions,
@@ -86,7 +86,7 @@ function RouteComponent() {
         {!isPro && <Promo />}
       </StickyWrapper>
       <FeedWrapper>
-        <Header title={userProgress?.activeCourse?.title} />
+        <LearnHeader title={userProgress?.activeCourse?.title} />
         {units.map((unit) => (
           <div key={unit.id} className="mb-10">
             <LessonUnit
