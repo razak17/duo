@@ -14,7 +14,7 @@ export const getUnitsFn = createServerFn({ method: 'GET' })
 export const getLessonFn = createServerFn({ method: 'GET' })
   .inputValidator(
     z.object({
-      lessonId: z.number(),
+      lessonId: z.number().optional(),
     }),
   )
   .middleware([authedFn])

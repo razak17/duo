@@ -32,3 +32,4 @@ export const userSubscription = pgTable('user_subscription', {
 
 export type UserProgress = typeof userProgress.$inferSelect
 export type ActiveCourseId = typeof userProgress.$inferSelect.activeCourseId
+export type UserSubscription = typeof userSubscription.$inferSelect

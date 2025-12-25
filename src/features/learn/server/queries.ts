@@ -14,9 +14,12 @@ export function getUnitsQueryOptions() {
   })
 }
 
-export function getLessonQueryOptions(lessonId: number) {
+export function getLessonQueryOptions(
+  userId: string | null,
+  lessonId?: number,
+) {
   return queryOptions({
-    queryKey: GET_LESSONS_KEYS.byId(lessonId),
+    queryKey: GET_LESSONS_KEYS.byUserId(userId || 'user-id'),
     queryFn: () => getLessonFn({ data: { lessonId } }),
   })
 }

@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LessonRouteRouteImport } from './routes/lesson/route'
 import { Route as siteRouteRouteImport } from './routes/(site)/route'
 import { Route as marketingRouteRouteImport } from './routes/(marketing)/route'
 import { Route as LessonIndexRouteImport } from './routes/lesson/index'
@@ -21,6 +22,11 @@ import { Route as siteCoursesIndexRouteImport } from './routes/(site)/courses/in
 import { Route as marketingTermsIndexRouteImport } from './routes/(marketing)/terms/index'
 import { Route as marketingPrivacyIndexRouteImport } from './routes/(marketing)/privacy/index'
 
+const LessonRouteRoute = LessonRouteRouteImport.update({
+  id: '/lesson',
+  path: '/lesson',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const siteRouteRoute = siteRouteRouteImport.update({
   id: '/(site)',
   getParentRoute: () => rootRouteImport,
@@ -30,9 +36,9 @@ const marketingRouteRoute = marketingRouteRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const LessonIndexRoute = LessonIndexRouteImport.update({
-  id: '/lesson/',
-  path: '/lesson/',
-  getParentRoute: () => rootRouteImport,
+  id: '/',
+  path: '/',
+  getParentRoute: () => LessonRouteRoute,
 } as any)
 const marketingIndexRoute = marketingIndexRouteImport.update({
   id: '/',
@@ -76,8 +82,9 @@ const marketingPrivacyIndexRoute = marketingPrivacyIndexRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/lesson': typeof LessonRouteRouteWithChildren
   '/': typeof marketingIndexRoute
-  '/lesson': typeof LessonIndexRoute
+  '/lesson/': typeof LessonIndexRoute
   '/privacy': typeof marketingPrivacyIndexRoute
   '/terms': typeof marketingTermsIndexRoute
   '/courses': typeof siteCoursesIndexRoute
@@ -101,6 +108,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/(marketing)': typeof marketingRouteRouteWithChildren
   '/(site)': typeof siteRouteRouteWithChildren
+  '/lesson': typeof LessonRouteRouteWithChildren
   '/(marketing)/': typeof marketingIndexRoute
   '/lesson/': typeof LessonIndexRoute
   '/(marketing)/privacy/': typeof marketingPrivacyIndexRoute
@@ -114,8 +122,9 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
     | '/lesson'
+    | '/'
+    | '/lesson/'
     | '/privacy'
     | '/terms'
     | '/courses'
@@ -138,6 +147,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/(marketing)'
     | '/(site)'
+    | '/lesson'
     | '/(marketing)/'
     | '/lesson/'
     | '/(marketing)/privacy/'
@@ -152,11 +162,18 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   marketingRouteRoute: typeof marketingRouteRouteWithChildren
   siteRouteRoute: typeof siteRouteRouteWithChildren
-  LessonIndexRoute: typeof LessonIndexRoute
+  LessonRouteRoute: typeof LessonRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/lesson': {
+      id: '/lesson'
+      path: '/lesson'
+      fullPath: '/lesson'
+      preLoaderRoute: typeof LessonRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/(site)': {
       id: '/(site)'
       path: ''
@@ -173,10 +190,10 @@ declare module '@tanstack/react-router' {
     }
     '/lesson/': {
       id: '/lesson/'
-      path: '/lesson'
-      fullPath: '/lesson'
+      path: '/'
+      fullPath: '/lesson/'
       preLoaderRoute: typeof LessonIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof LessonRouteRoute
     }
     '/(marketing)/': {
       id: '/(marketing)/'
@@ -273,10 +290,22 @@ const siteRouteRouteWithChildren = siteRouteRoute._addFileChildren(
   siteRouteRouteChildren,
 )
 
+interface LessonRouteRouteChildren {
+  LessonIndexRoute: typeof LessonIndexRoute
+}
+
+const LessonRouteRouteChildren: LessonRouteRouteChildren = {
+  LessonIndexRoute: LessonIndexRoute,
+}
+
+const LessonRouteRouteWithChildren = LessonRouteRoute._addFileChildren(
+  LessonRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   marketingRouteRoute: marketingRouteRouteWithChildren,
   siteRouteRoute: siteRouteRouteWithChildren,
-  LessonIndexRoute: LessonIndexRoute,
+  LessonRouteRoute: LessonRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

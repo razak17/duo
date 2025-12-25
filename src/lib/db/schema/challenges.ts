@@ -70,3 +70,6 @@ export const challengeProgressRelations = relations(
     }),
   }),
 )
+
+export type Challenge = typeof challenges.$inferSelect
+export type ChallengeOption = typeof challengeOptions.$inferSelect
