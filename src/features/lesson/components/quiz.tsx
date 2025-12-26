@@ -1,7 +1,7 @@
 import { useUser } from '@clerk/tanstack-react-start'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { useAudio } from 'react-use'
+import { useAudio, useMount } from 'react-use'
 import { toast } from 'sonner'
 
 import {
@@ -11,6 +11,7 @@ import {
 } from '@/lib/db/schema/challenges'
 import type { UserSubscription } from '@/lib/db/schema/users'
 
+import { FinishedLesson } from './finished-lesson'
 import { LessonChallenge } from './lesson-challenge'
 import { LessonFooter } from './lesson-footer'
 import { LessonHeader } from './lesson-header'
@@ -20,6 +21,8 @@ import {
   getCourseProgressQueryOptions,
   getUserProgressQueryOptions,
 } from '@/features/shared/server/queries'
+import { useHeartsModal } from '@/store/use-hearts-modal'
+import { usePracticeModal } from '@/store/use-practice-modal'
 import { DEFAULT_CHALLENGE_TITLE, QuizStatuses } from '../constants'
 import { reduceHeartsFn, upsertChallengeProgressFn } from '../server/fn'
 import type { QuizStatus } from '../types'
@@ -47,7 +50,14 @@ export function Quiz({
   const { isLoaded, user } = useUser()
   const queryClient = useQueryClient()
 
-  const [finishAudio] = useAudio({ src: '/finish.mp3', autoPlay: true })
+  const { open: openHeartsModal } = useHeartsModal()
+  const { open: openPracticeModal } = usePracticeModal()
+
+  useMount(() => {
+    if (initialPercentage === 100) {
+      openPracticeModal()
+    }
+  })
   const [correctAudio, _c, correctControls] = useAudio({ src: '/correct.wav' })
   const [incorrectAudio, _i, incorrectControls] = useAudio({
     src: '/incorrect.wav',
@@ -92,7 +102,7 @@ export function Quiz({
     ) => upsertChallengeProgressFn({ data }),
     onSuccess: async (data) => {
       if (data?.error === 'hearts') {
-        // TODO: Handle no hearts case (Open modal to buy hearts)
+        openHeartsModal()
         return
       }
 
@@ -125,7 +135,7 @@ export function Quiz({
         reduceHeartsFn({ data }),
       onSuccess: async (data) => {
         if (data?.error === 'hearts') {
-          // TODO: Handle no hearts case (Open modal to buy hearts)
+          openHeartsModal()
           return
         }
 
@@ -153,7 +163,9 @@ export function Quiz({
     })
 
   const onContinue = () => {
-    if (!selectedOption) return
+    if (!selectedOption) {
+      return
+    }
 
     if (status === QuizStatuses.Wrong) {
       setStatus(QuizStatuses.None)
@@ -179,6 +191,18 @@ export function Quiz({
     } else {
       reduceHeartsMutation({ challengeId: challenge.id })
     }
+  }
+
+  const finisehdLesson = !challenge
+
+  if (finisehdLesson) {
+    return (
+      <FinishedLesson
+        lessonId={lessonId}
+        challenges={challenges}
+        hearts={hearts}
+      />
+    )
   }
 
   const title =

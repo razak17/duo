@@ -12,6 +12,9 @@ import { env } from '@/lib/utils/env'
 
 import { DevTools } from '@/components/devtools'
 import { ExitModal } from '@/components/exit-modal'
+import { HeartsModal } from '@/components/hearts-modal'
+import { PracticeModal } from '@/components/practice-modal'
+import { Toaster } from '@/components/ui/sonner'
 import { userQueryOptions } from '@/features/shared/server/queries'
 import appCss from '../styles/app.css?url'
 
@@ -82,7 +85,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
+        <Toaster />
         <ExitModal />
+        <HeartsModal />
+        <PracticeModal />
         <DevTools />
         <Scripts />
       </body>
