@@ -10,6 +10,13 @@ import {
 
 import { lessons } from './lessons'
 
+export const Challenges = {
+  Select: 'SELECT',
+  Assist: 'ASSIST',
+} as const
+
+export type ChallengeType = typeof Challenges[keyof typeof Challenges]
+
 export const challengesEnum = pgEnum('type', ['SELECT', 'ASSIST'])
 
 export const challenges = pgTable('challenges', {

@@ -7,10 +7,7 @@ import type { Course } from '@/lib/db/schema/courses'
 import type { ActiveCourseId } from '@/lib/db/schema/users'
 
 import { CourseCard } from './course-card'
-import {
-  getUserProgressQueryOptions,
-  getUserSubscriptionQueryOptions,
-} from '@/features/shared/server/queries'
+import { getUserProgressQueryOptions } from '@/features/shared/server/queries'
 import { upsertUserProgressFn } from '../server/fn'
 import { getCoursesQueryOptions } from '../server/queries'
 
@@ -30,12 +27,7 @@ export const CourseList = ({ courses, activeCourseId }: CourseListProps) => {
     onSuccess: async () => {
       await Promise.all([
         queryClient.invalidateQueries(getCoursesQueryOptions()),
-        queryClient.invalidateQueries(
-          getUserProgressQueryOptions(user?.id || null),
-        ),
-        queryClient.invalidateQueries(
-          getUserSubscriptionQueryOptions(user?.id || null),
-        ),
+        queryClient.invalidateQueries(getUserProgressQueryOptions(user?.id)),
       ])
       navigate({ to: '/learn' })
     },

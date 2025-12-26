@@ -5,6 +5,8 @@ import { challengeProgress } from '@/lib/db/schema/challenges'
 import { units } from '@/lib/db/schema/units'
 import { userProgress, userSubscription } from '@/lib/db/schema/users'
 
+import { DAY_IN_MS } from '../constants'
+
 export const getCourseProgress = async ({ userId }: { userId: string }) => {
   const userProgress = await getUserProgress({ userId })
 
@@ -62,8 +64,6 @@ export async function getUserProgress({ userId }: { userId: string }) {
 
   return data || null
 }
-
-const DAY_IN_MS = 86_400_000
 
 export async function getUserSubscription({ userId }: { userId: string }) {
   const data = await db.query.userSubscription.findFirst({

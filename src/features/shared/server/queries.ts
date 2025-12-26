@@ -21,21 +21,21 @@ export function userQueryOptions() {
   })
 }
 
-export function getUserProgressQueryOptions(userId: string | null) {
+export function getUserProgressQueryOptions(userId?: string | null) {
   return queryOptions({
     queryKey: GET_USER_PROGRESS_KEYS.byId(userId || 'user-id'),
     queryFn: getUserProgressFn,
   })
 }
 
-export function getCourseProgressQueryOptions(userId: string | null) {
+export function getCourseProgressQueryOptions(userId?: string | null) {
   return queryOptions({
     queryKey: GET_COURSE_PROGRESS_KEYS.byUserId(userId || 'user-id'),
     queryFn: getCourseProgressFn,
   })
 }
 
-export function getUserSubscriptionQueryOptions(userId: string | null) {
+export function getUserSubscriptionQueryOptions(userId?: string | null) {
   return queryOptions({
     queryKey: GET_USER_SUBSCRIPTION_KEYS.byId(userId || 'user-id'),
     queryFn: getUserSubscriptionFn,

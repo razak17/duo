@@ -1,3 +1,5 @@
+export const DAY_IN_MS = 86_400_000
+
 export const GET_USER_KEYS = {
   current: ['auth', 'user'],
 } as const
