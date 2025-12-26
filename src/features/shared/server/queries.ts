@@ -12,7 +12,6 @@ import {
   GET_USER_PROGRESS_KEYS,
   GET_USER_SUBSCRIPTION_KEYS,
   ONE_MINUTE,
-  THIRTY_SECONDS,
 } from '../constants'
 
 export function userQueryOptions() {
@@ -26,7 +25,6 @@ export function getUserProgressQueryOptions(userId?: string | null) {
   return queryOptions({
     queryKey: GET_USER_PROGRESS_KEYS.byId(userId || 'user-id'),
     queryFn: getUserProgressFn,
-    staleTime: THIRTY_SECONDS,
   })
 }
 
@@ -34,7 +32,6 @@ export function getCourseProgressQueryOptions(userId?: string | null) {
   return queryOptions({
     queryKey: GET_COURSE_PROGRESS_KEYS.byUserId(userId || 'user-id'),
     queryFn: getCourseProgressFn,
-    staleTime: THIRTY_SECONDS,
   })
 }
 

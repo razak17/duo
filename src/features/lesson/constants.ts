@@ -2,6 +2,7 @@ export const QuizStatuses = {
   Correct: 'correct',
   Wrong: 'wrong',
   None: 'none',
+  Completed: 'completed',
 } as const
 
 export const MAX_HEARTS = 5

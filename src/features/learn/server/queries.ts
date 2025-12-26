@@ -49,6 +49,5 @@ export function getLessonPercentageQueryOptions(userId?: string | null) {
   return queryOptions({
     queryKey: GET_LESSON_PERCENTAGE_KEYS.byUserId(userId || 'user-id'),
     queryFn: () => getLessonPercentageFn(),
-    staleTime: THIRTY_SECONDS,
   })
 }
