@@ -1,4 +1,3 @@
-import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { Loader } from 'lucide-react'
 
@@ -55,20 +54,13 @@ export const Route = createFileRoute('/(site)/learn/')({
 })
 
 function RouteComponent() {
-  const { userId } = Route.useRouteContext()
-  const { data: userSubscription } = useSuspenseQuery(
-    getUserSubscriptionQueryOptions(userId),
-  )
-  const { data: userProgress } = useSuspenseQuery(
-    getUserProgressQueryOptions(userId),
-  )
-  const { data: units } = useSuspenseQuery(getUnitsQueryOptions())
-  const { data: courseProgress } = useSuspenseQuery(
-    getCourseProgressQueryOptions(userId),
-  )
-  const { data: lessonPercentage } = useSuspenseQuery(
-    getLessonPercentageQueryOptions(userId),
-  )
+  const {
+    units,
+    courseProgress,
+    lessonPercentage,
+    userSubscription,
+    userProgress,
+  } = Route.useLoaderData()
 
   const isPro = !!userSubscription?.isActive
 

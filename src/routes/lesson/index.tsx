@@ -1,4 +1,3 @@
-import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { Loader } from 'lucide-react'
 
@@ -30,14 +29,7 @@ export const Route = createFileRoute('/lesson/')({
 })
 
 function RouteComponent() {
-  const { userId } = Route.useRouteContext()
-  const { data: lesson } = useSuspenseQuery(getLessonQueryOptions(userId))
-  const { data: userSubscription } = useSuspenseQuery(
-    getUserSubscriptionQueryOptions(userId),
-  )
-  const { data: userProgress } = useSuspenseQuery(
-    getUserProgressQueryOptions(userId),
-  )
+  const { lesson, userProgress, userSubscription } = Route.useLoaderData()
 
   if (!lesson || !userProgress) {
     throw redirect({ to: '/courses' })
