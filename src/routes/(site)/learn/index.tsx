@@ -10,57 +10,33 @@ import { StickyWrapper } from '@/components/sticky-wrapper'
 import { UserProgress } from '@/components/user-progress'
 import { LearnHeader } from '@/features/learn/components/learn-header'
 import { LessonUnit } from '@/features/learn/components/lesson-unit'
-import {
-  getLessonPercentageQueryOptions,
-  getUnitsQueryOptions,
-} from '@/features/learn/server/queries'
-import {
-  getCourseProgressQueryOptions,
-  getUserProgressQueryOptions,
-  getUserSubscriptionQueryOptions,
-} from '@/features/shared/server/queries'
+import { getLearnPageDataQueryOptions } from '@/features/learn/server/queries'
+import { getUserSubscriptionQueryOptions } from '@/features/shared/server/queries'
 
 export const Route = createFileRoute('/(site)/learn/')({
   component: RouteComponent,
   pendingComponent: PendingComponent,
   loader: async ({ context: { queryClient, userId } }) => {
-    const [
-      units,
-      courseProgress,
-      lessonPercentage,
-      userSubscription,
-      userProgress,
-    ] = await Promise.all([
-      queryClient.ensureQueryData(getUnitsQueryOptions()),
-      queryClient.ensureQueryData(getCourseProgressQueryOptions(userId)),
-      queryClient.ensureQueryData(getLessonPercentageQueryOptions(userId)),
+    const [learnPageData, userSubscription] = await Promise.all([
+      queryClient.ensureQueryData(getLearnPageDataQueryOptions(userId)),
       queryClient.ensureQueryData(getUserSubscriptionQueryOptions(userId)),
-      queryClient.ensureQueryData(getUserProgressQueryOptions(userId)),
     ])
-    if (!userProgress || !userProgress.activeCourse) {
+
+    if (!learnPageData || !learnPageData.userProgress?.activeCourse) {
       throw redirect({ to: '/courses' })
     }
-    if (!courseProgress) {
-      throw redirect({ to: '/courses' })
-    }
+
     return {
-      units,
-      courseProgress,
-      lessonPercentage,
+      learnPageData,
       userSubscription,
-      userProgress,
     }
   },
 })
 
 function RouteComponent() {
-  const {
-    units,
-    courseProgress,
-    lessonPercentage,
-    userSubscription,
-    userProgress,
-  } = Route.useLoaderData()
+  const { learnPageData, userSubscription } = Route.useLoaderData()
+
+  const { units, activeLesson, lessonPercentage, userProgress } = learnPageData
 
   const isPro = !!userSubscription?.isActive
 
@@ -88,7 +64,7 @@ function RouteComponent() {
               title={unit.title}
               lessons={unit.lessons}
               activeLesson={
-                courseProgress?.activeLesson as
+                activeLesson as
                   | (Lesson & {
                       unit: Unit
                     })

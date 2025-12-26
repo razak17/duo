@@ -3,7 +3,18 @@ import { z } from 'zod'
 
 import { authedFn } from '@/lib/middleware/auth'
 
-import { getLesson, getLessonPercentage, getUnits } from './data-access'
+import {
+  getLearnPageData,
+  getLesson,
+  getLessonPercentage,
+  getUnits,
+} from './data-access'
+
+export const getLearnPageDataFn = createServerFn({ method: 'GET' })
+  .middleware([authedFn])
+  .handler(async ({ context: { userId } }) => {
+    return await getLearnPageData({ userId })
+  })
 
 export const getUnitsFn = createServerFn({ method: 'GET' })
   .middleware([authedFn])
