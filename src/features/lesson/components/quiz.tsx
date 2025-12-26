@@ -1,7 +1,6 @@
 import { useUser } from '@clerk/tanstack-react-start'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
-import { useAudio, useMount } from 'react-use'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import {
@@ -23,7 +22,7 @@ import {
 } from '@/features/shared/server/queries'
 import { useHeartsModal } from '@/store/use-hearts-modal'
 import { usePracticeModal } from '@/store/use-practice-modal'
-import { DEFAULT_CHALLENGE_TITLE, QuizStatuses } from '../constants'
+import { DEFAULT_CHALLENGE_TITLE, MAX_HEARTS, QuizStatuses } from '../constants'
 import { reduceHeartsFn, upsertChallengeProgressFn } from '../server/fn'
 import type { QuizStatus } from '../types'
 
@@ -53,24 +52,29 @@ export function Quiz({
   const { open: openHeartsModal } = useHeartsModal()
   const { open: openPracticeModal } = usePracticeModal()
 
-  useMount(() => {
+  const correctAudioRef = useRef<HTMLAudioElement | null>(null)
+  const incorrectAudioRef = useRef<HTMLAudioElement | null>(null)
+
+  useEffect(() => {
+    correctAudioRef.current = new Audio('/correct.wav')
+    incorrectAudioRef.current = new Audio('/incorrect.wav')
+
     if (initialPercentage === 100) {
       openPracticeModal()
     }
-  })
-  const [correctAudio, _c, correctControls] = useAudio({ src: '/correct.wav' })
-  const [incorrectAudio, _i, incorrectControls] = useAudio({
-    src: '/incorrect.wav',
-  })
 
-  const [lessonId] = useState(initialLessonId)
+    return () => {
+      correctAudioRef.current = null
+      incorrectAudioRef.current = null
+    }
+  }, [initialPercentage, openPracticeModal])
+
   const [hearts, setHearts] = useState(initialHearts)
   const [percentage, setPercentage] = useState(() => {
     return initialPercentage === 100 ? 0 : initialPercentage
   })
-  const [challenges] = useState(initialLessonChallenges)
   const [activeIndex, setActiveIndex] = useState(() => {
-    const uncompletedIndex = challenges.findIndex(
+    const uncompletedIndex = initialLessonChallenges.findIndex(
       (challenge) => !challenge.completed,
     )
     return uncompletedIndex === -1 ? 0 : uncompletedIndex
@@ -79,19 +83,26 @@ export function Quiz({
   const [selectedOption, setSelectedOption] = useState<number>()
   const [status, setStatus] = useState<QuizStatus>(QuizStatuses.None)
 
-  const challenge = challenges[activeIndex]
+  const challenge = initialLessonChallenges[activeIndex]
   const options = challenge?.challengeOptions ?? []
 
-  const onNext = () => {
-    setActiveIndex((current) => current + 1)
-  }
+  const onSelect = useCallback(
+    (id: number) => {
+      if (status !== QuizStatuses.None) {
+        return
+      }
+      setSelectedOption(id)
+    },
+    [status],
+  )
 
-  const onSelect = (id: number) => {
-    if (status !== QuizStatuses.None) {
-      return
-    }
-    setSelectedOption(id)
-  }
+  const invalidateQueries = useCallback(async () => {
+    await Promise.all([
+      queryClient.invalidateQueries(getLessonPercentageQueryOptions(user?.id)),
+      queryClient.invalidateQueries(getUserProgressQueryOptions(user?.id)),
+      queryClient.invalidateQueries(getCourseProgressQueryOptions(user?.id)),
+    ])
+  }, [queryClient, user?.id])
 
   const {
     mutate: challengeProgressMutation,
@@ -106,22 +117,15 @@ export function Quiz({
         return
       }
 
-      // TODO: Maybe invalidate quests, lesson id and leaderboard stuff
-      await Promise.all([
-        queryClient.invalidateQueries(
-          getLessonPercentageQueryOptions(user?.id),
-        ),
-        queryClient.invalidateQueries(getUserProgressQueryOptions(user?.id)),
-        queryClient.invalidateQueries(getCourseProgressQueryOptions(user?.id)),
-      ])
+      await invalidateQueries()
 
-      correctControls.play()
+      correctAudioRef.current?.play()
       setStatus('correct')
-      setPercentage((prev) => prev + 100 / challenges.length)
+      setPercentage((prev) => prev + 100 / initialLessonChallenges.length)
 
       // This is a practice
       if (initialPercentage === 100) {
-        setHearts((prev) => Math.min(prev + 1, 5))
+        setHearts((prev) => Math.min(prev + 1, MAX_HEARTS))
       }
     },
     onError: () => {
@@ -139,18 +143,9 @@ export function Quiz({
           return
         }
 
-        // TODO: Maybe invalidate quests, shop, lesson id and leaderboard stuff
-        await Promise.all([
-          queryClient.invalidateQueries(
-            getLessonPercentageQueryOptions(user?.id),
-          ),
-          queryClient.invalidateQueries(getUserProgressQueryOptions(user?.id)),
-          queryClient.invalidateQueries(
-            getCourseProgressQueryOptions(user?.id),
-          ),
-        ])
+        await invalidateQueries()
 
-        incorrectControls.play()
+        incorrectAudioRef.current?.play()
         setStatus('wrong')
 
         if (!data?.error) {
@@ -162,7 +157,7 @@ export function Quiz({
       },
     })
 
-  const onContinue = () => {
+  const onContinue = useCallback(() => {
     if (!selectedOption) {
       return
     }
@@ -174,7 +169,7 @@ export function Quiz({
     }
 
     if (status === QuizStatuses.Correct) {
-      onNext()
+      setActiveIndex((current) => current + 1)
       setStatus(QuizStatuses.None)
       setSelectedOption(undefined)
       return
@@ -191,29 +186,35 @@ export function Quiz({
     } else {
       reduceHeartsMutation({ challengeId: challenge.id })
     }
-  }
+  }, [
+    selectedOption,
+    status,
+    options,
+    challenge?.id,
+    challengeProgressMutation,
+    reduceHeartsMutation,
+  ])
 
-  const finisehdLesson = !challenge
+  const title = useMemo(
+    () =>
+      challenge?.type === Challenges.Assist
+        ? DEFAULT_CHALLENGE_TITLE
+        : challenge?.question,
+    [challenge?.type, challenge?.question],
+  )
 
-  if (finisehdLesson) {
+  if (!challenge) {
     return (
       <FinishedLesson
-        lessonId={lessonId}
-        challenges={challenges}
+        lessonId={initialLessonId}
+        challengeCount={initialLessonChallenges.length}
         hearts={hearts}
       />
     )
   }
 
-  const title =
-    challenge.type === Challenges.Assist
-      ? DEFAULT_CHALLENGE_TITLE
-      : challenge.question
-
   return (
     <>
-      {incorrectAudio}
-      {correctAudio}
       <LessonHeader
         hearts={hearts}
         percentage={percentage}

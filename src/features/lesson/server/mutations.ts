@@ -8,7 +8,7 @@ import {
   getUserProgress,
   getUserSubscription,
 } from '@/features/shared/server/data-access'
-import { MAX_HEARTS, POINTS_FOR_CORRECT_ANSWER } from '../constants'
+import { MAX_HEARTS, POINTS_PER_CHALLENGE } from '../constants'
 
 export async function upsertChallengeProgress({
   userId,
@@ -61,7 +61,7 @@ export async function upsertChallengeProgress({
       .update(userProgress)
       .set({
         hearts: Math.min(currentUserProgress.hearts + 1, MAX_HEARTS),
-        points: currentUserProgress.points + POINTS_FOR_CORRECT_ANSWER,
+        points: currentUserProgress.points + POINTS_PER_CHALLENGE,
       })
       .where(eq(userProgress.userId, userId))
     return
@@ -76,7 +76,7 @@ export async function upsertChallengeProgress({
   await db
     .update(userProgress)
     .set({
-      points: currentUserProgress.points + POINTS_FOR_CORRECT_ANSWER,
+      points: currentUserProgress.points + POINTS_PER_CHALLENGE,
     })
     .where(eq(userProgress.userId, userId))
 }

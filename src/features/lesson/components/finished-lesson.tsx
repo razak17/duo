@@ -1,71 +1,62 @@
 import { useNavigate } from '@tanstack/react-router'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import Confetti from 'react-confetti'
-import { useAudio, useWindowSize } from 'react-use'
-
-import type { Challenge, ChallengeOption } from '@/lib/db/schema/challenges'
 
 import { LessonFooter } from './lesson-footer'
 import { LessonResultCard } from './lesson-result-card'
+import { POINTS_PER_CHALLENGE } from '../constants'
 
 type FinishedLessonProps = {
   lessonId: number
-  challenges: Array<
-    Challenge & {
-      completed: boolean
-      challengeOptions: ChallengeOption[]
-    }
-  >
+  challengeCount: number
   hearts: number
 }
 
 export function FinishedLesson({
   lessonId,
-  challenges,
+  challengeCount,
   hearts,
 }: FinishedLessonProps) {
-  const { width, height } = useWindowSize()
-
   const navigate = useNavigate()
 
-  const [finishAudio] = useAudio({ src: '/finish.mp3', autoPlay: true })
+  const audioRef = useRef<HTMLAudioElement | null>(null)
+
+  useEffect(() => {
+    audioRef.current = new Audio('/finish.mp3')
+    audioRef.current.play()
+
+    return () => {
+      audioRef.current = null
+    }
+  }, [])
+
+  const onCheck = useCallback(() => {
+    navigate({ to: '/learn' })
+  }, [navigate])
+
+  const points = useMemo(
+    () => challengeCount * POINTS_PER_CHALLENGE,
+    [challengeCount],
+  )
+
   return (
     <>
-      {finishAudio}
-      <Confetti
-        width={width}
-        height={height}
-        recycle={false}
-        numberOfPieces={500}
-        tweenDuration={10000}
-      />
+      <Confetti recycle={false} numberOfPieces={500} tweenDuration={10000} />
       <div className="mx-auto flex h-full max-w-lg flex-col items-center justify-center gap-y-4 text-center lg:gap-y-8">
         <img
           src="/finish.svg"
           alt="Finish"
-          className="hidden lg:block"
-          height={100}
-          width={100}
-        />
-        <img
-          src="/finish.svg"
-          alt="Finish"
-          className="block lg:hidden"
-          height={50}
-          width={50}
+          className="h-[50px] w-[50px] lg:h-[100px] lg:w-[100px]"
         />
         <h1 className="font-bold text-neutral-700 text-xl lg:text-3xl">
           Great job! <br /> You&apos;ve completed the lesson.
         </h1>
         <div className="flex w-full items-center gap-x-4">
-          <LessonResultCard variant="points" value={challenges.length * 10} />
+          <LessonResultCard variant="points" value={points} />
           <LessonResultCard variant="hearts" value={hearts} />
         </div>
       </div>
-      <LessonFooter
-        lessonId={lessonId}
-        status="completed"
-        onCheck={() => navigate({ to: '/learn' })}
-      />
+      <LessonFooter lessonId={lessonId} status="completed" onCheck={onCheck} />
     </>
   )
 }
