@@ -1,3 +1,4 @@
+import { useNavigate } from '@tanstack/react-router'
 import { CheckCircle, XCircle } from 'lucide-react'
 import { useKey, useMedia } from 'react-use'
 
@@ -18,6 +19,7 @@ export function LessonFooter({
   disabled,
   lessonId,
 }: LessonFooterProps) {
+  const navigate = useNavigate()
   useKey('Enter', onCheck, {}, [onCheck])
   const isMobile = useMedia('(max-width: 1024px)')
 
@@ -46,7 +48,7 @@ export function LessonFooter({
           <Button
             variant="default"
             size={isMobile ? 'sm' : 'lg'}
-            onClick={() => (window.location.href = `/lesson/${lessonId}`)}
+            onClick={() => navigate({ to: `/lesson/${lessonId}` })}
           >
             Practice again
           </Button>

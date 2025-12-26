@@ -37,6 +37,7 @@ export const ChallengeCard = memo(function ChallengeCard({
       audioRef.current = new Audio(audioSrc)
     }
     return () => {
+      audioRef.current?.pause()
       audioRef.current = null
     }
   }, [audioSrc])
@@ -45,7 +46,7 @@ export const ChallengeCard = memo(function ChallengeCard({
     if (disabled) {
       return
     }
-    audioRef.current?.play()
+    audioRef.current?.play().catch(() => {})
     onClick()
   }, [disabled, onClick])
 

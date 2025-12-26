@@ -17,8 +17,10 @@ export async function upsertChallengeProgress({
   userId: string
   challengeId: number
 }) {
-  const currentUserProgress = await getUserProgress({ userId })
-  const userSubscription = await getUserSubscription({ userId })
+  const [currentUserProgress, userSubscription] = await Promise.all([
+    getUserProgress({ userId }),
+    getUserSubscription({ userId }),
+  ])
 
   if (!currentUserProgress) {
     throw new Error('User progress not found')
@@ -88,8 +90,10 @@ export async function reduceHearts({
   userId: string
   challengeId: number
 }) {
-  const currentUserProgress = await getUserProgress({ userId })
-  const userSubscription = await getUserSubscription({ userId })
+  const [currentUserProgress, userSubscription] = await Promise.all([
+    getUserProgress({ userId }),
+    getUserSubscription({ userId }),
+  ])
 
   const challenge = await db.query.challenges.findFirst({
     where: eq(challenges.id, challengeId),

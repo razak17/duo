@@ -23,9 +23,10 @@ export function FinishedLesson({
 
   useEffect(() => {
     audioRef.current = new Audio('/finish.mp3')
-    audioRef.current.play()
+    audioRef.current.play().catch(() => {})
 
     return () => {
+      audioRef.current?.pause()
       audioRef.current = null
     }
   }, [])
