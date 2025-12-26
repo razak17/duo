@@ -7,7 +7,6 @@ import {
   getUserSubscriptionFn,
 } from './fn'
 import {
-  FIVE_MINUTES,
   GET_COURSE_PROGRESS_KEYS,
   GET_USER_KEYS,
   GET_USER_PROGRESS_KEYS,
@@ -20,7 +19,6 @@ export function userQueryOptions() {
   return queryOptions({
     queryKey: GET_USER_KEYS.current,
     queryFn: () => getUserFn(),
-    staleTime: FIVE_MINUTES,
   })
 }
 
