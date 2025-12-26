@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
+import { useEffect, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -53,7 +53,7 @@ export function ExitModal() {
               size="lg"
               onClick={() => {
                 close()
-                navigate({ to: '/learn'})
+                navigate({ to: '/learn' })
               }}
             >
               End session

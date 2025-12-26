@@ -1,5 +1,8 @@
-import { useQueryClient } from '@tanstack/react-query'
+import { useUser } from '@clerk/tanstack-react-start'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
+import { useAudio } from 'react-use'
+import { toast } from 'sonner'
 
 import {
   type Challenge,
@@ -9,9 +12,16 @@ import {
 import type { UserSubscription } from '@/lib/db/schema/users'
 
 import { LessonChallenge } from './lesson-challenge'
+import { LessonFooter } from './lesson-footer'
 import { LessonHeader } from './lesson-header'
 import { QuestionBubble } from './question-bubble'
+import { getLessonPercentageQueryOptions } from '@/features/learn/server/queries'
+import {
+  getCourseProgressQueryOptions,
+  getUserProgressQueryOptions,
+} from '@/features/shared/server/queries'
 import { DEFAULT_CHALLENGE_TITLE, QuizStatuses } from '../constants'
+import { reduceHeartsFn, upsertChallengeProgressFn } from '../server/fn'
 import type { QuizStatus } from '../types'
 
 type QuizProps = {
@@ -34,7 +44,14 @@ export function Quiz({
   initialLessonChallenges,
   userSubscription,
 }: QuizProps) {
+  const { isLoaded, user } = useUser()
   const queryClient = useQueryClient()
+
+  const [finishAudio] = useAudio({ src: '/finish.mp3', autoPlay: true })
+  const [correctAudio, _c, correctControls] = useAudio({ src: '/correct.wav' })
+  const [incorrectAudio, _i, incorrectControls] = useAudio({
+    src: '/incorrect.wav',
+  })
 
   const [lessonId] = useState(initialLessonId)
   const [hearts, setHearts] = useState(initialHearts)
@@ -66,6 +83,104 @@ export function Quiz({
     setSelectedOption(id)
   }
 
+  const {
+    mutate: challengeProgressMutation,
+    isPending: challengeProgressPending,
+  } = useMutation({
+    mutationFn: (
+      data: Parameters<typeof upsertChallengeProgressFn>[0]['data'],
+    ) => upsertChallengeProgressFn({ data }),
+    onSuccess: async (data) => {
+      if (data?.error === 'hearts') {
+        // TODO: Handle no hearts case (Open modal to buy hearts)
+        return
+      }
+
+      // TODO: Maybe invalidate quests, lesson id and leaderboard stuff
+      await Promise.all([
+        queryClient.invalidateQueries(
+          getLessonPercentageQueryOptions(user?.id),
+        ),
+        queryClient.invalidateQueries(getUserProgressQueryOptions(user?.id)),
+        queryClient.invalidateQueries(getCourseProgressQueryOptions(user?.id)),
+      ])
+
+      correctControls.play()
+      setStatus('correct')
+      setPercentage((prev) => prev + 100 / challenges.length)
+
+      // This is a practice
+      if (initialPercentage === 100) {
+        setHearts((prev) => Math.min(prev + 1, 5))
+      }
+    },
+    onError: () => {
+      toast.error('Failed to process your answer')
+    },
+  })
+
+  const { mutate: reduceHeartsMutation, isPending: reduceHeartsPending } =
+    useMutation({
+      mutationFn: (data: Parameters<typeof reduceHeartsFn>[0]['data']) =>
+        reduceHeartsFn({ data }),
+      onSuccess: async (data) => {
+        if (data?.error === 'hearts') {
+          // TODO: Handle no hearts case (Open modal to buy hearts)
+          return
+        }
+
+        // TODO: Maybe invalidate quests, shop, lesson id and leaderboard stuff
+        await Promise.all([
+          queryClient.invalidateQueries(
+            getLessonPercentageQueryOptions(user?.id),
+          ),
+          queryClient.invalidateQueries(getUserProgressQueryOptions(user?.id)),
+          queryClient.invalidateQueries(
+            getCourseProgressQueryOptions(user?.id),
+          ),
+        ])
+
+        incorrectControls.play()
+        setStatus('wrong')
+
+        if (!data?.error) {
+          setHearts((prev) => Math.max(prev - 1, 0))
+        }
+      },
+      onError: () => {
+        toast.error('Failed to reduce hearts')
+      },
+    })
+
+  const onContinue = () => {
+    if (!selectedOption) return
+
+    if (status === QuizStatuses.Wrong) {
+      setStatus(QuizStatuses.None)
+      setSelectedOption(undefined)
+      return
+    }
+
+    if (status === QuizStatuses.Correct) {
+      onNext()
+      setStatus(QuizStatuses.None)
+      setSelectedOption(undefined)
+      return
+    }
+
+    const correctOption = options.find((option) => option.correct)
+
+    if (!correctOption) {
+      return
+    }
+
+    if (correctOption.id === selectedOption) {
+      challengeProgressMutation({ challengeId: challenge.id })
+    } else {
+      reduceHeartsMutation({ challengeId: challenge.id })
+    }
+  }
+
   const title =
     challenge.type === Challenges.Assist
       ? DEFAULT_CHALLENGE_TITLE
@@ -73,6 +188,8 @@ export function Quiz({
 
   return (
     <>
+      {incorrectAudio}
+      {correctAudio}
       <LessonHeader
         hearts={hearts}
         percentage={percentage}
@@ -93,13 +210,23 @@ export function Quiz({
                 onSelect={onSelect}
                 status={status}
                 selectedOption={selectedOption}
-                disabled={false}
+                disabled={challengeProgressPending || reduceHeartsPending}
                 type={challenge.type}
               />
             </div>
           </div>
         </div>
       </div>
+      <LessonFooter
+        disabled={
+          challengeProgressPending ||
+          reduceHeartsPending ||
+          !isLoaded ||
+          !selectedOption
+        }
+        status={status}
+        onCheck={onContinue}
+      />
     </>
   )
 }

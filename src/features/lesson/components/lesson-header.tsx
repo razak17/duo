@@ -9,7 +9,7 @@ type LessonProps = {
   hasActiveSubscription: boolean
 }
 
-export async function LessonHeader({
+export function LessonHeader({
   hearts,
   percentage,
   hasActiveSubscription,

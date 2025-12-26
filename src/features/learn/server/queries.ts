@@ -15,7 +15,7 @@ export function getUnitsQueryOptions() {
 }
 
 export function getLessonQueryOptions(
-  userId: string | null,
+  userId?: string | null,
   lessonId?: number,
 ) {
   return queryOptions({
@@ -24,7 +24,7 @@ export function getLessonQueryOptions(
   })
 }
 
-export function getLessonPercentageQueryOptions(userId: string | null) {
+export function getLessonPercentageQueryOptions(userId?: string | null) {
   return queryOptions({
     queryKey: GET_LESSON_PERCENTAGE_KEYS.byUserId(userId || 'user-id'),
     queryFn: () => getLessonPercentageFn(),

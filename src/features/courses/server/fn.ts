@@ -23,7 +23,7 @@ export const getCourseByIdFn = createServerFn({ method: 'GET' })
     return await getCourseById({ courseId })
   })
 
-export const upsertUserProgressFn = createServerFn({ method: 'GET' })
+export const upsertUserProgressFn = createServerFn({ method: 'POST' })
   .inputValidator(
     z.object({
       courseId: z.number(),

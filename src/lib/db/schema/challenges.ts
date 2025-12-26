@@ -15,7 +15,7 @@ export const Challenges = {
   Assist: 'ASSIST',
 } as const
 
-export type ChallengeType = typeof Challenges[keyof typeof Challenges]
+export type ChallengeType = (typeof Challenges)[keyof typeof Challenges]
 
 export const challengesEnum = pgEnum('type', ['SELECT', 'ASSIST'])
 
