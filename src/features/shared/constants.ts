@@ -1,4 +1,7 @@
 export const DAY_IN_MS = 86_400_000
+export const FIVE_MINUTES = 1000 * 60 * 5
+export const ONE_MINUTE = 1000 * 60
+export const THIRTY_SECONDS = 1000 * 30
 
 export const GET_USER_KEYS = {
   current: ['auth', 'user'],
@@ -15,6 +18,6 @@ export const GET_USER_PROGRESS_KEYS = {
 } as const
 
 export const GET_USER_SUBSCRIPTION_KEYS = {
-  all: ['user-subscripiton'],
+  all: ['user-subscription'],
   byId: (userId: string) => [...GET_USER_SUBSCRIPTION_KEYS.all, userId],
 } as const

@@ -5,7 +5,7 @@ import { courses } from '@/lib/db/schema/courses'
 
 export async function getCourses() {
   const data = await db.query.courses.findMany()
-  return data || null
+  return data ?? null
 }
 
 export async function getCourseById({ courseId }: { courseId: number }) {
@@ -23,5 +23,5 @@ export async function getCourseById({ courseId }: { courseId: number }) {
     },
   })
 
-  return data || null
+  return data ?? null
 }

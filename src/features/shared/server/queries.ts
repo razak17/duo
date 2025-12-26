@@ -7,15 +7,14 @@ import {
   getUserSubscriptionFn,
 } from './fn'
 import {
+  FIVE_MINUTES,
   GET_COURSE_PROGRESS_KEYS,
   GET_USER_KEYS,
   GET_USER_PROGRESS_KEYS,
   GET_USER_SUBSCRIPTION_KEYS,
+  ONE_MINUTE,
+  THIRTY_SECONDS,
 } from '../constants'
-
-const FIVE_MINUTES = 1000 * 60 * 5
-const ONE_MINUTE = 1000 * 60
-const THIRTY_SECONDS = 1000 * 30
 
 export function userQueryOptions() {
   return queryOptions({

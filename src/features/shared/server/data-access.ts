@@ -8,15 +8,17 @@ import { userProgress, userSubscription } from '@/lib/db/schema/users'
 import { DAY_IN_MS } from '../constants'
 
 export const getCourseProgress = async ({ userId }: { userId: string }) => {
-  const userProgress = await getUserProgress({ userId })
+  const userProgressData = await db.query.userProgress.findFirst({
+    where: eq(userProgress.userId, userId),
+  })
 
-  if (!userId || !userProgress?.activeCourseId) {
+  if (!userProgressData?.activeCourseId) {
     return null
   }
 
   const unitsInActiveCourse = await db.query.units.findMany({
     orderBy: (units, { asc }) => [asc(units.order)],
-    where: eq(units.courseId, userProgress.activeCourseId),
+    where: eq(units.courseId, userProgressData.activeCourseId),
     with: {
       lessons: {
         orderBy: (lessons, { asc }) => [asc(lessons.order)],
@@ -62,7 +64,7 @@ export async function getUserProgress({ userId }: { userId: string }) {
     },
   })
 
-  return data || null
+  return data ?? null
 }
 
 export async function getUserSubscription({ userId }: { userId: string }) {

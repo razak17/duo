@@ -1,3 +1,5 @@
+import { eq } from 'drizzle-orm'
+
 import { db } from '@/lib/db'
 import { userProgress } from '@/lib/db/schema/users'
 
@@ -29,11 +31,15 @@ export const upsertUserProgress = async ({
   const existingUserProgress = await getUserProgress({ userId })
 
   if (existingUserProgress) {
-    await db.update(userProgress).set({
-      activeCourseId: courseId,
-      userName: user.firstName || 'User',
-      userImageSrc: user.imageUrl || '/mascot.svg',
-    })
+    await db
+      .update(userProgress)
+      .set({
+        activeCourseId: courseId,
+        userName: user.firstName || 'User',
+        userImageSrc: user.imageUrl || '/mascot.svg',
+      })
+      .where(eq(userProgress.userId, userId))
+    return
   }
 
   await db.insert(userProgress).values({
