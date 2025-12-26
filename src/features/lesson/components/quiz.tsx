@@ -1,6 +1,6 @@
 import { useUser } from '@clerk/tanstack-react-start'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import {
@@ -195,13 +195,10 @@ export function Quiz({
     reduceHeartsMutation,
   ])
 
-  const title = useMemo(
-    () =>
-      challenge?.type === Challenges.Assist
-        ? DEFAULT_CHALLENGE_TITLE
-        : challenge?.question,
-    [challenge?.type, challenge?.question],
-  )
+  const title =
+    challenge?.type === Challenges.Assist
+      ? DEFAULT_CHALLENGE_TITLE
+      : challenge?.question
 
   if (!challenge) {
     return (

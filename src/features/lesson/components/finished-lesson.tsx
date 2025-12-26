@@ -1,5 +1,5 @@
 import { useNavigate } from '@tanstack/react-router'
-import { useCallback, useEffect, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import Confetti from 'react-confetti'
 
 import { LessonFooter } from './lesson-footer'
@@ -34,10 +34,7 @@ export function FinishedLesson({
     navigate({ to: '/learn' })
   }, [navigate])
 
-  const points = useMemo(
-    () => challengeCount * POINTS_PER_CHALLENGE,
-    [challengeCount],
-  )
+  const points = challengeCount * POINTS_PER_CHALLENGE
 
   return (
     <>
