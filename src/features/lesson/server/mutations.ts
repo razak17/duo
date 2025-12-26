@@ -10,21 +10,11 @@ import {
 } from '@/features/shared/server/data-access'
 import { MAX_HEARTS, POINTS_PER_CHALLENGE } from '../constants'
 
-export async function upsertChallengeProgress({
-  userId,
-  challengeId,
-}: {
-  userId: string
-  challengeId: number
-}) {
+async function getChallengeContext(userId: string, challengeId: number) {
   const [currentUserProgress, userSubscription] = await Promise.all([
     getUserProgress({ userId }),
     getUserSubscription({ userId }),
   ])
-
-  if (!currentUserProgress) {
-    throw new Error('User progress not found')
-  }
 
   const challenge = await db.query.challenges.findFirst({
     where: eq(challenges.id, challengeId),
@@ -41,7 +31,32 @@ export async function upsertChallengeProgress({
     ),
   })
 
-  const isPractice = !!existingChallengeProgress
+  return {
+    currentUserProgress,
+    userSubscription,
+    challenge,
+    existingChallengeProgress,
+    isPractice: !!existingChallengeProgress,
+  }
+}
+
+export async function upsertChallengeProgress({
+  userId,
+  challengeId,
+}: {
+  userId: string
+  challengeId: number
+}) {
+  const {
+    currentUserProgress,
+    userSubscription,
+    existingChallengeProgress,
+    isPractice,
+  } = await getChallengeContext(userId, challengeId)
+
+  if (!currentUserProgress) {
+    throw new Error('User progress not found')
+  }
 
   if (
     currentUserProgress.hearts === 0 &&
@@ -51,7 +66,7 @@ export async function upsertChallengeProgress({
     return { error: 'hearts' }
   }
 
-  if (isPractice) {
+  if (isPractice && existingChallengeProgress) {
     await db
       .update(challengeProgress)
       .set({
@@ -90,27 +105,8 @@ export async function reduceHearts({
   userId: string
   challengeId: number
 }) {
-  const [currentUserProgress, userSubscription] = await Promise.all([
-    getUserProgress({ userId }),
-    getUserSubscription({ userId }),
-  ])
-
-  const challenge = await db.query.challenges.findFirst({
-    where: eq(challenges.id, challengeId),
-  })
-
-  if (!challenge) {
-    throw new Error('Challenge not found')
-  }
-
-  const existingChallengeProgress = await db.query.challengeProgress.findFirst({
-    where: and(
-      eq(challengeProgress.userId, userId),
-      eq(challengeProgress.challengeId, challengeId),
-    ),
-  })
-
-  const isPractice = !!existingChallengeProgress
+  const { currentUserProgress, userSubscription, isPractice } =
+    await getChallengeContext(userId, challengeId)
 
   if (isPractice) {
     return { error: 'practice' }
