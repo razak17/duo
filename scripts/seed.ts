@@ -1,13 +1,22 @@
-import { neon } from '@neondatabase/serverless'
 import { config } from 'dotenv'
-import { drizzle } from 'drizzle-orm/neon-http'
+import { drizzle } from 'drizzle-orm/node-postgres'
 import * as schema from 'src/lib/db/schema'
 
 config({ path: ['.env.local'] })
 
-// biome-ignore lint/style/noNonNullAssertion: ignore
-const sql = neon(process.env.DATABASE_URL!)
-const db = drizzle(sql, { schema })
+const localConnection = {
+  password: process.env.DB_PASSWORD as string,
+  user: process.env.DB_USER as string,
+  database: process.env.DB_NAME as string,
+  host: process.env.DB_HOST as string,
+  ssl: false,
+}
+
+const db = drizzle({
+  schema,
+  connection: localConnection,
+  logger: true,
+})
 
 const main = async () => {
   try {

@@ -5,7 +5,11 @@ export const env = createEnv({
   server: {
     SERVER_URL: z.url().min(1),
     APP_ENV: z.enum(['development', 'test', 'production']),
-    DATABASE_URL: z.url().min(1),
+    DATABASE_URL: z.url().min(1).optional(),
+    DB_HOST: z.string().min(1).optional(),
+    DB_USER: z.string().min(1).optional(),
+    DB_PASSWORD: z.string().min(1).optional(),
+    DB_NAME: z.string().min(1).optional(),
     CLERK_SECRET_KEY: z.string().min(1),
   },
 
@@ -32,6 +36,10 @@ export const env = createEnv({
     SERVER_URL: process.env.SERVER_URL,
     APP_ENV: process.env.APP_ENV,
     DATABASE_URL: process.env.DATABASE_URL,
+    DB_HOST: process.env.DB_HOST,
+    DB_USER: process.env.DB_USER,
+    DB_PASSWORD: process.env.DB_PASSWORD,
+    DB_NAME: process.env.DB_NAME,
     VITE_APP_TITLE: import.meta.env.VITE_APP_TITLE,
     VITE_APP_ENV: import.meta.env.VITE_APP_ENV,
     VITE_SERVER_URL: import.meta.env.VITE_SERVER_URL,
