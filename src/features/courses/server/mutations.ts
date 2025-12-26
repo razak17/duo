@@ -1,7 +1,8 @@
 import { db } from '@/lib/db'
 import { userProgress } from '@/lib/db/schema/users'
 
-import { getCourseById, getUserProgress } from './data-access'
+import { getCourseById } from './data-access'
+import { getUserProgress } from '@/features/shared/server/data-access'
 
 export const upsertUserProgress = async ({
   courseId,
