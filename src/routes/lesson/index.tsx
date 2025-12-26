@@ -1,3 +1,4 @@
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { Loader } from 'lucide-react'
 
@@ -12,7 +13,7 @@ export const Route = createFileRoute('/lesson/')({
   component: RouteComponent,
   pendingComponent: PendingComponent,
   loader: async ({ context: { queryClient, userId } }) => {
-    const [lesson, userSubscription, userProgress] = await Promise.all([
+    const [lesson, , userProgress] = await Promise.all([
       queryClient.ensureQueryData(getLessonQueryOptions(userId)),
       queryClient.ensureQueryData(getUserSubscriptionQueryOptions(userId)),
       queryClient.ensureQueryData(getUserProgressQueryOptions(userId)),
@@ -20,16 +21,18 @@ export const Route = createFileRoute('/lesson/')({
     if (!lesson || !userProgress) {
       throw redirect({ to: '/courses' })
     }
-    return {
-      lesson,
-      userSubscription,
-      userProgress,
-    }
   },
 })
 
 function RouteComponent() {
-  const { lesson, userProgress, userSubscription } = Route.useLoaderData()
+  const { userId } = Route.useRouteContext()
+  const { data: lesson } = useSuspenseQuery(getLessonQueryOptions(userId))
+  const { data: userSubscription } = useSuspenseQuery(
+    getUserSubscriptionQueryOptions(userId),
+  )
+  const { data: userProgress } = useSuspenseQuery(
+    getUserProgressQueryOptions(userId),
+  )
 
   if (!lesson || !userProgress) {
     throw redirect({ to: '/courses' })

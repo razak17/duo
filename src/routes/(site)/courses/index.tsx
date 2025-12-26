@@ -1,3 +1,4 @@
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { Loader } from 'lucide-react'
 
@@ -9,16 +10,19 @@ export const Route = createFileRoute('/(site)/courses/')({
   component: RouteComponent,
   pendingComponent: PendingComponent,
   loader: async ({ context: { queryClient, userId } }) => {
-    const [courses, userProgress] = await Promise.all([
+    await Promise.all([
       queryClient.ensureQueryData(getCoursesQueryOptions()),
       queryClient.ensureQueryData(getUserProgressQueryOptions(userId)),
     ])
-    return { courses, userProgress }
   },
 })
 
 function RouteComponent() {
-  const { courses, userProgress } = Route.useLoaderData()
+  const { userId } = Route.useRouteContext()
+  const { data: courses } = useSuspenseQuery(getCoursesQueryOptions())
+  const { data: userProgress } = useSuspenseQuery(
+    getUserProgressQueryOptions(userId),
+  )
 
   return (
     <div className="mx-auto h-full max-w-[912px] px-3">

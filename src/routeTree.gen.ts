@@ -14,6 +14,7 @@ import { Route as siteRouteRouteImport } from './routes/(site)/route'
 import { Route as marketingRouteRouteImport } from './routes/(marketing)/route'
 import { Route as LessonIndexRouteImport } from './routes/lesson/index'
 import { Route as marketingIndexRouteImport } from './routes/(marketing)/index'
+import { Route as LessonLessonIdRouteImport } from './routes/lesson/$lessonId'
 import { Route as siteShopIndexRouteImport } from './routes/(site)/shop/index'
 import { Route as siteQuestsIndexRouteImport } from './routes/(site)/quests/index'
 import { Route as siteLearnIndexRouteImport } from './routes/(site)/learn/index'
@@ -44,6 +45,11 @@ const marketingIndexRoute = marketingIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => marketingRouteRoute,
+} as any)
+const LessonLessonIdRoute = LessonLessonIdRouteImport.update({
+  id: '/$lessonId',
+  path: '/$lessonId',
+  getParentRoute: () => LessonRouteRoute,
 } as any)
 const siteShopIndexRoute = siteShopIndexRouteImport.update({
   id: '/shop/',
@@ -83,6 +89,7 @@ const marketingPrivacyIndexRoute = marketingPrivacyIndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/lesson': typeof LessonRouteRouteWithChildren
+  '/lesson/$lessonId': typeof LessonLessonIdRoute
   '/': typeof marketingIndexRoute
   '/lesson/': typeof LessonIndexRoute
   '/privacy': typeof marketingPrivacyIndexRoute
@@ -94,6 +101,7 @@ export interface FileRoutesByFullPath {
   '/shop': typeof siteShopIndexRoute
 }
 export interface FileRoutesByTo {
+  '/lesson/$lessonId': typeof LessonLessonIdRoute
   '/': typeof marketingIndexRoute
   '/lesson': typeof LessonIndexRoute
   '/privacy': typeof marketingPrivacyIndexRoute
@@ -109,6 +117,7 @@ export interface FileRoutesById {
   '/(marketing)': typeof marketingRouteRouteWithChildren
   '/(site)': typeof siteRouteRouteWithChildren
   '/lesson': typeof LessonRouteRouteWithChildren
+  '/lesson/$lessonId': typeof LessonLessonIdRoute
   '/(marketing)/': typeof marketingIndexRoute
   '/lesson/': typeof LessonIndexRoute
   '/(marketing)/privacy/': typeof marketingPrivacyIndexRoute
@@ -123,6 +132,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/lesson'
+    | '/lesson/$lessonId'
     | '/'
     | '/lesson/'
     | '/privacy'
@@ -134,6 +144,7 @@ export interface FileRouteTypes {
     | '/shop'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/lesson/$lessonId'
     | '/'
     | '/lesson'
     | '/privacy'
@@ -148,6 +159,7 @@ export interface FileRouteTypes {
     | '/(marketing)'
     | '/(site)'
     | '/lesson'
+    | '/lesson/$lessonId'
     | '/(marketing)/'
     | '/lesson/'
     | '/(marketing)/privacy/'
@@ -201,6 +213,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof marketingIndexRouteImport
       parentRoute: typeof marketingRouteRoute
+    }
+    '/lesson/$lessonId': {
+      id: '/lesson/$lessonId'
+      path: '/$lessonId'
+      fullPath: '/lesson/$lessonId'
+      preLoaderRoute: typeof LessonLessonIdRouteImport
+      parentRoute: typeof LessonRouteRoute
     }
     '/(site)/shop/': {
       id: '/(site)/shop/'
@@ -291,10 +310,12 @@ const siteRouteRouteWithChildren = siteRouteRoute._addFileChildren(
 )
 
 interface LessonRouteRouteChildren {
+  LessonLessonIdRoute: typeof LessonLessonIdRoute
   LessonIndexRoute: typeof LessonIndexRoute
 }
 
 const LessonRouteRouteChildren: LessonRouteRouteChildren = {
+  LessonLessonIdRoute: LessonLessonIdRoute,
   LessonIndexRoute: LessonIndexRoute,
 }
 

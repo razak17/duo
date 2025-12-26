@@ -1,3 +1,4 @@
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { Loader } from 'lucide-react'
 
@@ -17,24 +18,30 @@ export const Route = createFileRoute('/(site)/learn/')({
   component: RouteComponent,
   pendingComponent: PendingComponent,
   loader: async ({ context: { queryClient, userId } }) => {
-    const [learnPageData, userSubscription] = await Promise.all([
-      queryClient.ensureQueryData(getLearnPageDataQueryOptions(userId)),
-      queryClient.ensureQueryData(getUserSubscriptionQueryOptions(userId)),
-    ])
+    const learnPageData = await queryClient.ensureQueryData(
+      getLearnPageDataQueryOptions(userId),
+    )
 
     if (!learnPageData || !learnPageData.userProgress?.activeCourse) {
       throw redirect({ to: '/courses' })
     }
 
-    return {
-      learnPageData,
-      userSubscription,
-    }
+    await queryClient.ensureQueryData(getUserSubscriptionQueryOptions(userId))
   },
 })
 
 function RouteComponent() {
-  const { learnPageData, userSubscription } = Route.useLoaderData()
+  const { userId } = Route.useRouteContext()
+  const { data: learnPageData } = useSuspenseQuery(
+    getLearnPageDataQueryOptions(userId),
+  )
+  const { data: userSubscription } = useSuspenseQuery(
+    getUserSubscriptionQueryOptions(userId),
+  )
+
+  if (!learnPageData) {
+    throw new Error('Learn page data not found')
+  }
 
   const { units, activeLesson, lessonPercentage, userProgress } = learnPageData
 
