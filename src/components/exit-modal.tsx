@@ -1,5 +1,6 @@
 import { useNavigate } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+
+import { useIsClient } from '@/lib/hooks/use-is-client'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -14,10 +15,8 @@ import { useExitModal } from '@/store/use-exit-modal'
 
 export function ExitModal() {
   const navigate = useNavigate()
-  const [isClient, setIsClient] = useState(false)
+  const isClient = useIsClient()
   const { isOpen, close } = useExitModal()
-
-  useEffect(() => setIsClient(true), [])
 
   if (!isClient) {
     return null

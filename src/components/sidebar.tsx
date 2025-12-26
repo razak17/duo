@@ -3,16 +3,23 @@ import {
   ClerkLoading,
   UserButton,
 } from '@clerk/tanstack-react-start'
-import { Link } from '@tanstack/react-router'
 import { Loader } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 
 import { SidebarItem } from './sidebar-item'
+import { Logo } from '@/components/logo'
 
 type SidebarProps = {
   className?: string
 }
+
+const SIDEBAR_ITEMS = [
+  { label: 'Learn', href: '/learn', iconSrc: '/learn.svg' },
+  { label: 'Leaderboard', href: '/leaderboard', iconSrc: '/leaderboard.svg' },
+  { label: 'Quests', href: '/quests', iconSrc: '/quests.svg' },
+  { label: 'Shop', href: '/shop', iconSrc: '/shop.svg' },
+] as const
 
 export function Sidebar({ className }: SidebarProps) {
   return (
@@ -22,23 +29,13 @@ export function Sidebar({ className }: SidebarProps) {
         className,
       )}
     >
-      <Link to="/learn">
-        <div className="flex items-center gap-x-3 pt-8 pb-7 pl-4">
-          <img src="/mascot.svg" height={40} width={40} alt="Mascot" />
-          <h1 className="font-extrabold text-2xl text-green-600 tracking-wide">
-            Lingozeit
-          </h1>
-        </div>
-      </Link>
+      <div className="pt-8 pb-7 pl-4">
+        <Logo href="/learn" />
+      </div>
       <div className="flex flex-1 flex-col gap-y-2">
-        <SidebarItem label="Learn" href="/learn" iconSrc="/learn.svg" />
-        <SidebarItem
-          label="Leaderboard"
-          href="/leaderboard"
-          iconSrc="/leaderboard.svg"
-        />
-        <SidebarItem label="quests" href="/quests" iconSrc="/quests.svg" />
-        <SidebarItem label="shop" href="/shop" iconSrc="/shop.svg" />
+        {SIDEBAR_ITEMS.map((item) => (
+          <SidebarItem key={item.href} {...item} />
+        ))}
       </div>
       <div className="p-4">
         <ClerkLoading>

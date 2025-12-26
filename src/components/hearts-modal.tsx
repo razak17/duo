@@ -1,5 +1,6 @@
 import { useNavigate } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+
+import { useIsClient } from '@/lib/hooks/use-is-client'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -14,10 +15,8 @@ import { useHeartsModal } from '@/store/use-hearts-modal'
 
 export const HeartsModal = () => {
   const navigate = useNavigate()
-  const [isClient, setIsClient] = useState(false)
+  const isClient = useIsClient()
   const { isOpen, close } = useHeartsModal()
-
-  useEffect(() => setIsClient(true), [])
 
   const onClick = () => {
     close()

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useIsClient } from '@/lib/hooks/use-is-client'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -12,10 +12,8 @@ import {
 import { usePracticeModal } from '@/store/use-practice-modal'
 
 export function PracticeModal() {
-  const [isClient, setIsClient] = useState(false)
+  const isClient = useIsClient()
   const { isOpen, close } = usePracticeModal()
-
-  useEffect(() => setIsClient(true), [])
 
   if (!isClient) {
     return null
